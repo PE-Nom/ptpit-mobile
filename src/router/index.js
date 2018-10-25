@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Hello from '@/components/Hello'
+import Home from '@/components/Home'
+import ProductsView from '@/components/ProductsView/ProductsView'
+import IssuesView from '@/components/IssuesView/IssuesView'
+import PendingRequestsView from '@/components/PendingRequestsView/PendingRequestsView'
 
 Vue.use(Router)
 
@@ -8,8 +11,23 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Hello',
-      component: Hello
+      name: 'Home',
+      component: Home
+    },
+    {
+      path: '/products',
+      name: 'Products',
+      component: ProductsView
+    },
+    {
+      path: '/issues',
+      name: 'Issues',
+      component: IssuesView
+    },
+    {
+      path: '/pendingrequests',
+      name: 'pendingrequest',
+      component: PendingRequestsView
     }
   ]
 })

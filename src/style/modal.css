@@ -1,0 +1,110 @@
+.modal-mask {
+    position: fixed;
+    z-index: 9998;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, .5);
+    display: table;
+    transition: opacity .3s ease;
+  }
+
+  .modal-wrapper {
+    display: table-cell;
+    vertical-align: middle;
+  }
+
+  .modal-container {
+    width: 50%;
+    margin: 0px auto;
+    padding: 20px 30px;
+    background-color: #fff;
+    border-radius: 2px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
+    transition: all .3s ease;
+    font-family: Helvetica, Arial, sans-serif;
+      display: flex;
+      display: -webkit-flex;
+      flex-direction: column;
+      -webkit-flex-direction: column;
+  }
+  .modal-header h3 {
+    margin-top: 0;
+    color: #42b983;
+  }
+
+  .modal-body {
+    margin: 20px 0;
+  }
+  .modal-footer {
+    margin: 20px 0;
+  }
+  .modal-default-button {
+    /* float: right; */
+    width: 100px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: center;
+    /* 文字サイズを1.4emに指定 */
+    font-size: 1.0em;
+    /* 文字の太さをboldに指定 */
+    font-weight: bold;
+    /* 背景色を濃い青色に指定 */
+    background-color: rgb(19, 134, 241);
+    /* 文字色を白色に指定 */
+    color: #fff;
+    /* ボーダーをなくす */
+    border-style: none;
+    border-radius: 3px;
+    /* ボタンの影の指定
+    * 影の横幅を2px
+    * 縦長を2px
+    * ぼかしを3px
+    * 広がりを1px
+    * 色を#666（グレー）に指定 */
+    box-shadow: 2px 2px 3px 1px #248;
+    -moz-box-shadow: 2px 2px 3px 1px #248;
+    -webkit-box-shadow: 2px 2px 3px 1px #248;
+
+  }
+
+  .check-explain {
+    /* 文字サイズを1.4emに指定 */
+    font-size: 0.8em;
+  }
+
+  @media screen and (max-device-width: 768px),screen and (max-width: 768px)
+  {
+    .modal-container  {
+      width:70%;
+    }
+  }
+  @media screen and (max-width: 468px)
+  {
+    .modal-container  {
+      width:90%;
+    }
+  }
+
+  /*
+  * The following styles are auto-applied to elements with
+  * transition="modal" when their visibility is toggled
+  * by Vue.js.
+  *
+  * You can easily play with the modal transition by editing
+  * these styles.
+  */
+  .modal-enter {
+    opacity: 0;
+  }
+
+  .modal-leave-active {
+    opacity: 0;
+  }
+
+  .modal-enter .modal-container,
+  .modal-leave-active .modal-container {
+    -webkit-transform: scale(1.1);
+    transform: scale(1.1);
+  }
