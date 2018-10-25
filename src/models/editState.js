@@ -1,6 +1,6 @@
 export default {
   editState: {
-    productId: null,
+    productId: -1,
     issueId: null,
     pendingRequest: null,
     previousPath: null,

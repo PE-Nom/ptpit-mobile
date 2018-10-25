@@ -32,6 +32,7 @@
 import _ from 'lodash'
 import config from './config.js'
 import naim from './models/naim.js'
+import editstate from './models/editState.js'
 import LoginDialog from '@/components/LoginDialog.vue'
 import LogoutDialog from '@/components/LogoutDialog.vue'
 
@@ -82,7 +83,7 @@ export default {
     window.addEventListener('resize', this.setTabletMode, false)
     window.addEventListener('online', this.onlineEventHandler, false)
     window.addEventListener('offline', this.offlineEventHandler, false)
-
+    editstate.productId = -1
     // 開発時のログインバイパス
     let user = {
       username: 'nc-manager-001',

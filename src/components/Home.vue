@@ -17,6 +17,8 @@
 </template>
 
 <script>
+import editstate from '../models/editState.js'
+
 export default {
   // name: 'Home',
   data () {
@@ -29,6 +31,7 @@ export default {
   },
   created () {
     console.log('home created')
+    editstate.productId = -1
   },
   destroy () {
   }

@@ -166,6 +166,7 @@ export default {
   async created () {
     console.log('ProductsView created')
     this.products = await naim.getAvailableProjects()
+    editstate.productId = -1
   },
   mounted () {
     console.log('ProjectsView mounted')
@@ -176,7 +177,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .products-view{
   padding-left: 6px;
   padding-right: 6px;
