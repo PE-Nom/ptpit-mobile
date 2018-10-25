@@ -11,7 +11,9 @@
           <div class="modal-body">
 
             <div>
-                <p class="explanation">{{explanation}}</p>
+                <p class="explanation">ログアウトします。<br><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;よろしいですか</p>
             </div>
 
           </div>
@@ -30,11 +32,6 @@ import naim from '../models/naim.js'
 
 export default {
   name: 'LogoutDialog',
-  data () {
-    return {
-      explanation: 'ログアウトします。よろしいですか'
-    }
-  },
   methods: {
     logout () {
       console.log('close @ logoutDialog')

@@ -16,6 +16,7 @@
       </b-collapse>
 
     </b-navbar>
+    <div class="username" style="font-size:'x-small;'">ログイン：{{userName}}</div>
 
     <LoginDialog v-if="showLoginDialog" @cancelClose="cancelClose" @loginClose="loginClose">
       <h3 slot="header">ログイン</h3>
@@ -30,7 +31,7 @@
 <script>
 import _ from 'lodash'
 import config from './config.js'
-// import naim from './models/naim.js'
+import naim from './models/naim.js'
 import LoginDialog from '@/components/LoginDialog.vue'
 import LogoutDialog from '@/components/LogoutDialog.vue'
 
@@ -43,6 +44,7 @@ export default {
   data () {
     return {
       activeUser: false,
+      userName: '',
       version: config.Versions,
       showLoginDialog: false,
       showLogoutDialog: false,
@@ -80,6 +82,14 @@ export default {
     window.addEventListener('resize', this.setTabletMode, false)
     window.addEventListener('online', this.onlineEventHandler, false)
     window.addEventListener('offline', this.offlineEventHandler, false)
+
+    // 開発時のログインバイパス
+    let user = {
+      username: 'nc-manager-001',
+      password: 'nc-manager-001'
+    }
+    await naim.initialize(user)
+    this.loginClose(user)
   },
   mounted () {
     this.$router.push('/')
@@ -104,8 +114,7 @@ export default {
     loginClose: function (user) {
       console.log('## login@App.vue')
       console.log(user)
-      this.user = user
-      this.userName = this.user.username
+      this.userName = user.username
       this.activeUser = true
       this.showLoginDialog = false
       this.$router.push('/')
@@ -114,9 +123,7 @@ export default {
       console.log('## logout@App.vue')
       this.activeUser = false
       this.showLogoutDialog = false
-      this.user.username = null
-      this.user.password = null
-      this.userName = this.user.username
+      this.userName = ''
       this.$router.push('/')
     },
     cancelClose: function () {
@@ -129,7 +136,6 @@ export default {
 </script>
 
 <style>
-
 body {
   overflow: hidden;
   margin: 0;
@@ -164,5 +170,12 @@ header span {
   font-weight: 400;
   box-sizing: border-box;
   padding-top: 16px;
+}
+
+.username {
+  line-height: 30px;
+  padding-left: 4px;
+  font-style: italic;
+  font-weight: bold;
 }
 </style>
