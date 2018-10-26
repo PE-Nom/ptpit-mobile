@@ -1,5 +1,6 @@
 <template>
   <div class='products-view'>
+    <div class="username" style="font-size:'x-small;'">ログイン：{{userName}}</div>
     <div class="header-field">
       <div class="table-row header">
         <div class="message-field">
@@ -72,7 +73,6 @@ export default {
       'background-color': '#FFFFFF'
     }
     return {
-      userName: '',
       icon_new_product: iconNew,
       icon_refresh_list: iconRefresh,
       columns: columns,
@@ -83,7 +83,8 @@ export default {
       message: '不適合管理対象　製品情報',
       selectedId: -1,
       styleForSelectedRow: styleForSelectedRow,
-      styleForNonSelectedRow: styleForNonSelectedRow
+      styleForNonSelectedRow: styleForNonSelectedRow,
+      userName: ''
     }
   },
   computed: {
@@ -167,6 +168,7 @@ export default {
     console.log('ProductsView created')
     this.products = await naim.getAvailableProjects()
     editstate.productId = -1
+    this.userName = editstate.user.username
   },
   mounted () {
     console.log('ProjectsView mounted')
@@ -189,6 +191,12 @@ export default {
   width: 100%;
   border:rgba(63, 63, 63, 0.1) solid 1px;
   */
+}
+.username {
+  line-height: 30px;
+  padding-left: 4px;
+  font-style: italic;
+  font-weight: bold;
 }
 .wrapper {
   display: flex;

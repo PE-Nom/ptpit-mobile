@@ -16,7 +16,6 @@
       </b-collapse>
 
     </b-navbar>
-    <div class="username" style="font-size:'x-small;'">ログイン：{{userName}}</div>
 
     <LoginDialog v-if="showLoginDialog" @cancelClose="cancelClose" @loginClose="loginClose">
       <h3 slot="header">ログイン</h3>
@@ -66,6 +65,11 @@ export default {
   },
   async beforeCreate () {
     console.log('beforeCreate @ App.vue')
+    let user = {
+      username: '',
+      password: ''
+    }
+    editstate.user = user
     // 起動時にredmineのデータを取り込む取得
     /*
     try {
@@ -116,6 +120,7 @@ export default {
       console.log('## login@App.vue')
       console.log(user)
       this.userName = user.username
+      editstate.user = user
       this.activeUser = true
       this.showLoginDialog = false
       this.$router.push('/')
@@ -125,6 +130,11 @@ export default {
       this.activeUser = false
       this.showLogoutDialog = false
       this.userName = ''
+      let user = {
+        username: '',
+        password: ''
+      }
+      editstate.user = user
       this.$router.push('/')
     },
     cancelClose: function () {
@@ -171,12 +181,5 @@ header span {
   font-weight: 400;
   box-sizing: border-box;
   padding-top: 16px;
-}
-
-.username {
-  line-height: 30px;
-  padding-left: 4px;
-  font-style: italic;
-  font-weight: bold;
 }
 </style>

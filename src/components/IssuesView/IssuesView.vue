@@ -1,5 +1,6 @@
 <template>
   <div class="issues-view">
+    <div class="username" style="font-size:'x-small;'">ログイン：{{userName}}</div>
     <div class="header-field">
       <div class="table-row header">
         <div class="message-field">
@@ -98,7 +99,8 @@ export default {
       productOptions: [{value: '', text: ''}],
       selectedId: -1,
       styleForSelectedRow: styleForSelectedRow,
-      styleForNonSelectedRow: styleForNonSelectedRow
+      styleForNonSelectedRow: styleForNonSelectedRow,
+      userName: ''
     }
   },
   computed: {
@@ -225,6 +227,7 @@ export default {
     this.product = editstate.productId
     this.issues = naim.getIssues()
     this.filteredIssues = this.filterProduct()
+    this.userName = editstate.user.username
   },
   mounted () {
     console.log('IssuesView mounted')
@@ -241,6 +244,12 @@ export default {
   padding-right: 6px;
   height: 100%;
   box-shadow: 2px 2px 10px rgba(63, 63, 63, 0.2);
+}
+.username {
+  line-height: 30px;
+  padding-left: 4px;
+  font-style: italic;
+  font-weight: bold;
 }
 .wrapper {
   display: flex;
