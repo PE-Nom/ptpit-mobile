@@ -24,12 +24,36 @@
       </b-button>
     </div>
     <div class="edit-field">
+      <!-- ステータス表示 エリア -->
+      <div class="status-display-field">
+        <div v-if="issStatus==='登録'">
+          <span style="color:red">登録</span><span style="color:gray"> > 原因分析 > 是正処置 > 効果確認 > 水平展開 > 完了</span>
+        </div>
+        <div v-else-if="issStatus==='原因分析'">
+          <span style="color:blue">登録 > </span><span style="color:red">原因分析</span><span style="color:gray"> > 是正処置 > 効果確認 > 水平展開 > 完了</span>
+        </div>
+        <div v-else-if="issStatus==='是正処置'">
+          <span style="color:blue">登録 > 原因分析 > </span><span style="color:red">是正処置</span><span style="color:gray"> > 効果確認 > 水平展開 > 完了</span>
+        </div>
+        <div v-else-if="issStatus==='効果確認'">
+          <span style="color:blue">登録 > 原因分析 > 是正処置 > </span><span style="color:red">効果確認</span><span style="color:gray"> > 水平展開 > 完了</span>
+        </div>
+        <div v-else-if="issStatus==='水平展開'">
+          <span style="color:blue">登録 > 原因分析 > 是正処置 > 効果確認 > </span><span style="color:red">水平展開</span><span style="color:gray"> > 完了</span>
+        </div>
+        <div v-else-if="issStatus==='完了'">
+          <span style="color:blue">登録 > 原因分析 > 是正処置 > 効果確認 > 水平展開 > 完了</span>
+        </div>
+        <div v-else>
+          登録 > 原因分析 > 是正処置 > 効果確認 > 水平展開 > 完了
+        </div>
+      </div>
       <!-- 基本情報 編集エリア -->
       <b-card no-body class="mb-1">
         <b-card-header header-tag="header" class="p-1" role="tab">
           <b-btn block href="#" v-b-toggle.accordion-issue variant="success">安全指摘 id:#{{issueId}}</b-btn>
         </b-card-header>
-        <b-collapse id="accordion-issue" visible accordion="issue-accordion" role="tabpanel">
+        <b-collapse id="accordion-issue" :visible="this.product===-1" accordion="issue-accordion" role="tabpanel">
           <b-card-body>
             <div class="basic-item-field">
               <!--
@@ -133,30 +157,6 @@
           </b-card-body>
         </b-collapse>
       </b-card>
-      <!-- ステータス表示 エリア -->
-      <div class="status-display-field">
-        <div v-if="issStatus==='登録'">
-          <span style="color:red">登録</span><span style="color:gray"> => 原因分析 => 是正処置 => 効果確認 => 水平展開 => 完了</span>
-        </div>
-        <div v-else-if="issStatus==='原因分析'">
-          <span style="color:blue">登録 => </span><span style="color:red">原因分析</span><span style="color:gray"> => 是正処置 => 効果確認 => 水平展開 => 完了</span>
-        </div>
-        <div v-else-if="issStatus==='是正処置'">
-          <span style="color:blue">登録 => 原因分析 => </span><span style="color:red">是正処置</span><span style="color:gray"> => 効果確認 => 水平展開 => 完了</span>
-        </div>
-        <div v-else-if="issStatus==='効果確認'">
-          <span style="color:blue">登録 => 原因分析 => 是正処置 => </span><span style="color:red">効果確認</span><span style="color:gray"> => 水平展開 => 完了</span>
-        </div>
-        <div v-else-if="issStatus==='水平展開'">
-          <span style="color:blue">登録 => 原因分析 => 是正処置 => 効果確認 => </span><span style="color:red">水平展開</span><span style="color:gray"> => 完了</span>
-        </div>
-        <div v-else-if="issStatus==='完了'">
-          <span style="color:blue">登録 > 原因分析 > 是正処置 > 効果確認 > 水平展開 > 完了</span>
-        </div>
-        <div v-else>
-          登録 > 原因分析 > 是正処置 > 効果確認 > 水平展開 > 完了
-        </div>
-      </div>
       <!-- 詳細内容 編集エリア -->
       <div class="content-field">
         <!-- 不適合内容 -->
@@ -293,6 +293,7 @@
         </b-card>
       </div>
     </div>
+    <Indicator v-if="updating || creating" message="更新中です。少々お待ちください" color="#FFFFFF"></Indicator>
   </div>
 </template>
 
@@ -598,7 +599,6 @@ export default {
       await this.uploadFile()
       this.resetIssueDuty()
       this.updating = false
-      this.$emit('reloadRequest')
     },
     async createInfo () {
       console.log('createInfo')
@@ -612,7 +612,6 @@ export default {
       await this.uploadFile()
       this.resetIssueDuty()
       this.creating = false
-      this.$emit('reloadRequest')
     },
     // ------------------
     issueSubjectChanged () {
@@ -787,6 +786,7 @@ export default {
   created () {
     console.log('IssueEdit created')
     this.userName = editstate.user.username
+    this.issue = editstate.issue
     this.initializeProps()
     this.setData()
   },
@@ -865,6 +865,7 @@ export default {
   text-align: left;
   padding-top: 6px;
   padding-left: 6px;
+  padding-right: 6px;
   height: 100%;
   overflow: auto;
   box-shadow: 2px 2px 10px rgba(63, 63, 63, 0.2);

@@ -174,18 +174,16 @@ export default {
     },
     editIssue (entry) {
       console.log('editIssue')
-      /*
       this.selectedId = entry.id
       let issue = {
         issue: entry.issue,
         currentProduct: this.product
       }
-      */
+      editstate.issue = issue
       this.$router.push('issueedit')
     },
     createIssue () {
       console.log('createIssue')
-      /*
       this.selectedId = -1
       let issue = {
         issue: {
@@ -196,7 +194,7 @@ export default {
         },
         currentProduct: -1
       }
-      */
+      editstate.issue = issue
       this.$router.push('issueedit')
     },
     async refreshList () {

@@ -5,9 +5,8 @@ export default {
       password: null
     },
     productId: -1,
-    issueId: null,
+    issue: null,
     pendingRequest: null,
-    previousPath: null,
     attachment: null
   }
 }
