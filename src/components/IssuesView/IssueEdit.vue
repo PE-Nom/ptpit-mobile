@@ -314,6 +314,9 @@ export default {
     DateSelector
   },
   computed: {
+    connectStatus: function () {
+      return this.$store.getters.connectStat ? 'on-line' : 'off-line'
+    },
     nonConformityVariant () {
       let myStatusIdx = this.findStatusIndex(this.issDetailItems[0].conditions.currentState)
       let currentStatusIdx = this.findStatusIndex(this.issStatus)

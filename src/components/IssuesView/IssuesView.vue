@@ -104,6 +104,14 @@ export default {
     }
   },
   computed: {
+    connected: function () {
+      if (this.$store.getters.connectStat) {
+        this.connectStatus = 'on-line'
+      } else {
+        this.connectStatus = 'off-line'
+      }
+      return this.$store.getters.connectStat
+    },
     issueslist () {
       console.log('### issues computed property in IssuestList.vue ####')
       let ret = []
@@ -174,13 +182,18 @@ export default {
     },
     editIssue (entry) {
       console.log('editIssue')
-      this.selectedId = entry.id
-      let issue = {
-        issue: entry.issue,
-        currentProduct: this.product
+      let storageKey = 'issue-' + entry.id
+      if (!this.connected && !(storageKey in localStorage)) {
+        alert('オフラインモード　詳細情報を取得できません')
+      } else {
+        this.selectedId = entry.id
+        let issue = {
+          issue: entry.issue,
+          currentProduct: this.product
+        }
+        editstate.issue = issue
+        this.$router.push('issueedit')
       }
-      editstate.issue = issue
-      this.$router.push('issueedit')
     },
     createIssue () {
       console.log('createIssue')
@@ -199,9 +212,13 @@ export default {
     },
     async refreshList () {
       console.log('refreshList')
-      await naim.retrieveIssues(naim.getTrackerIdByName('不適合'))
-      this.issues = naim.getIssues()
-      this.filterByProduct()
+      if (!this.connected) {
+        alert('オフラインモード　更新できません')
+      } else {
+        await naim.retrieveIssues(naim.getTrackerIdByName('不適合'))
+        this.issues = naim.getIssues()
+        this.filterByProduct()
+      }
     },
     setProductOptions () {
       console.log('setProductOptions')
