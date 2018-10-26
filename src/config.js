@@ -9,19 +9,19 @@ exports.Password = 'mhims0821' // Pitsan password
 */
 
 // for Office work
+/*
 exports.BaseURL = 'https://192.168.1.4' // Pitsan Server BaseURL @office
 exports.UploadBaseURL = this.BaseURL + ':8081' // Pitsan Server BaseURL @ office & home
 exports.Username = 'nc-manager-001' // Pitsan Username
 exports.Password = 'nc-manager-001' // Pitsan password
-/*
 */
 
 // for AWS
-/*
 exports.BaseURL = 'https://pitsan.nomtech-pwa.com' // @ AWS
 exports.UploadBaseURL = this.BaseURL // @ AWS
 exports.Username = 'patroler1' // Pitsan Username
 exports.Password = 'safety0918' // Pitsan password
+/*
 */
 
 // Watsion Speech To Text URI
