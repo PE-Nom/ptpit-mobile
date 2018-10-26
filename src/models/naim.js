@@ -1,3 +1,4 @@
+import store from '../store.js'
 import redmine from './redmine.js'
 import util from './util.js'
 import fileUploader from './fileUploader.js'
@@ -31,7 +32,8 @@ export default {
       console.log(resp)
       // alert(resp.data.dateandtime)
       //
-      await this.retrieveUsers(user.username)
+      await this.retrieveUsers()
+      this.getUserId(user.username)
       await this.retrieveTrackers()
       await this.retrieveCustomFields()
       await this.retrieveRoles()
@@ -46,6 +48,19 @@ export default {
       await this.retrieveDocumentCategories()
     } catch (err) {
       alert(err)
+      store.commit('setConnectStat', {connectStat: false})
+      this.users = JSON.parse(localStorage.getItem('users'))
+      this.trackers = JSON.parse(localStorage.getItem('trackers'))
+      this.customFields = JSON.parse(localStorage.getItem('customFields'))
+      this.roles = JSON.parse(localStorage.getItem('roles'))
+      this.issueStatuses = JSON.parse(localStorage.getItem('issueStatuses'))
+      this.issuePriorities = JSON.parse(localStorage.getItem('issuePriorities'))
+      this.projects = JSON.parse(localStorage.getItem('projects'))
+      this.issues = JSON.parse(localStorage.getItem('issues'))
+      this.memberships = JSON.parse(localStorage.getItem('memberships'))
+      this.availablePrjs = JSON.parse(localStorage.getItem('availablePrjs'))
+      this.activities = JSON.parse(localStorage.getItem('activities'))
+      this.documentCategories = JSON.parse(localStorage.getItem('documentCategories'))
     }
   },
   finalize () {
@@ -58,22 +73,14 @@ export default {
   // ------------------
   // Users
   // ------------------
-  async retrieveUsers (userName) {
+  async retrieveUsers () {
     try {
       await redmine.users(res => {
         console.log('==== Users @ naim ====')
-        // this.users = util.convertUsersObjs(res.data.users)
         this.users = res.data.users
         console.log(this.users)
-        let id = null
-        this.users.forEach(user => {
-          if (user.login === userName) {
-            console.log(user)
-            id = user.id
-          }
-        })
-        this.userId = id
-        console.log('getUserId : ' + userName + ' id : ' + this.userId)
+        localStorage.removeItem('users')
+        localStorage.setItem('users', JSON.stringify(this.users))
       })
     } catch (err) {
       console.log('==== Users @ naim ====')
@@ -81,10 +88,18 @@ export default {
     }
   },
   getUsers () {
-    // return util.convertUsersObjs(this.users)
     return this.users
   },
-  getUserId () {
+  getUserId (userName) {
+    let id = null
+    this.users.forEach(user => {
+      if (user.login === userName) {
+        console.log(user)
+        id = user.id
+      }
+    })
+    this.userId = id
+    console.log('getUserId : ' + userName + ' id : ' + this.userId)
     return this.userId
   },
   // ------------------
@@ -95,6 +110,8 @@ export default {
       await redmine.getTrackers(res => {
         console.log('==== trackers @ naim ====')
         this.trackers = res.data.trackers
+        localStorage.removeItem('trackers')
+        localStorage.setItem('trackers', JSON.stringify(this.trackers))
         console.log(this.trackers)
       })
     } catch (err) {
@@ -120,18 +137,18 @@ export default {
   async retrieveCustomFields () {
     try {
       const customfileds = []
-      if (redmine.isConfigured()) {
-        await redmine.customFields({}, res => {
-          console.log('==== CustomFields @ naim ====')
-          res.data.custom_fields.forEach(element => {
-            customfileds.push(element)
-            // console.log(element)
-          })
+      await redmine.customFields({}, res => {
+        console.log('==== CustomFields @ naim ====')
+        res.data.custom_fields.forEach(element => {
+          customfileds.push(element)
+          // console.log(element)
         })
-      }
+      })
       // ここで customfields List を更新する。
       this.customFields = customfileds
       console.log(this.customFields)
+      localStorage.removeItem('customFields')
+      localStorage.setItem('customFields', JSON.stringify(this.customFields))
     } catch (err) {
       throw err
     }
@@ -164,14 +181,14 @@ export default {
   // ------------------
   async retrieveRoles () {
     try {
-      if (redmine.isConfigured()) {
-        await redmine.roles({}, res => {
-          console.log('==== retrieveRoles @ naim ====')
-          console.log(res)
-          this.roles = res.data.roles
-        })
-      }
+      await redmine.roles({}, res => {
+        console.log('==== retrieveRoles @ naim ====')
+        console.log(res)
+        this.roles = res.data.roles
+      })
       // ここで customfields List を更新する。
+      localStorage.removeItem('roles')
+      localStorage.setItem('roles', JSON.stringify(this.roles))
       console.log(this.roles)
     } catch (err) {
       throw err
@@ -203,6 +220,8 @@ export default {
       await redmine.getIssueStatuses(res => {
         console.log('==== Issue Statuses @ naim ====')
         this.issueStatuses = res.data.issue_statuses
+        localStorage.removeItem('issueStatuses')
+        localStorage.setItem('issueStatuses', JSON.stringify(this.issueStatuses))
         console.log(this.issueStatuses)
       })
     } catch (err) {
@@ -223,11 +242,13 @@ export default {
   // ------------------
   // Issue Priority
   // ------------------
-  retrieveIssuePriorities: async function () {
+  async retrieveIssuePriorities () {
     try {
       await redmine.getIssuePriorities(res => {
         console.log('==== Issue Priorities @ naim ====')
         this.issuePriorities = res.data.issue_priorities
+        localStorage.removeItem('issuePriorities')
+        localStorage.setItem('issuePriorities', JSON.stringify(this.issuePriorities))
         console.log(this.issuePriorities)
       })
     } catch (err) {
@@ -253,17 +274,17 @@ export default {
       // Project List
       const prjs = []
       this.projects = []
-      if (redmine.isConfigured()) {
-        await redmine.projects({}, res => {
-          console.log('==== Retrieve Projects @ naim ====')
-          res.data.projects.forEach(element => {
-            prjs.push(element)
-            // console.log(element)
-          })
+      await redmine.projects({}, res => {
+        console.log('==== Retrieve Projects @ naim ====')
+        res.data.projects.forEach(element => {
+          prjs.push(element)
+          // console.log(element)
         })
-      }
+      })
       // ここで Project List を更新する。
       this.projects = prjs
+      localStorage.removeItem('projects')
+      localStorage.setItem('projects', JSON.stringify(this.projects))
       console.log(this.projects)
     } catch (err) {
       alert(err)
@@ -287,13 +308,11 @@ export default {
   async retrieveProject (prjId) {
     let ret = null
     try {
-      if (redmine.isConfigured()) {
-        ret = await redmine.project(prjId, {}, res => {
-          // console.log('==== retrieve Project @ naim ====')
-          // console.log(res)
-        })
-        return ret
-      }
+      ret = await redmine.project(prjId, {}, res => {
+        // console.log('==== retrieve Project @ naim ====')
+        // console.log(res)
+      })
+      return ret
     } catch (err) {
       throw err
     }
@@ -320,8 +339,12 @@ export default {
           }
         })
       }
+      localStorage.removeItem('memberships')
+      localStorage.setItem('memberships', JSON.stringify(this.memberships))
       // console.log(this.memberships)
       this.availablePrjs = prjs
+      localStorage.removeItem('availablePrjs')
+      localStorage.setItem('availablePrjs', JSON.stringify(this.availablePrjs))
       // console.log(this.availablePrjs)
     } catch (err) {
       console.log('==== Membership of project @ naim ====')
@@ -427,14 +450,14 @@ export default {
       // Issues List
       this.issues = []
       console.log(' call redmine.issues')
-      if (redmine.isConfigured()) {
-        await redmine.issues(trackerId, res => {
-          console.log('==== Issues @ naim ====')
-          res.data.issues.forEach(el => {
-            this.issues.push(el)
-          })
+      await redmine.issues(trackerId, res => {
+        console.log('==== Issues @ naim ====')
+        res.data.issues.forEach(el => {
+          this.issues.push(el)
         })
-      }
+      })
+      localStorage.removeItem('issues')
+      localStorage.setItem('issues', JSON.stringify(this.issues))
       console.log(this.issues)
     } catch (err) {
       console.log('err @ retrieveIssues')
@@ -454,6 +477,11 @@ export default {
         // console.log('==== Issue Detail @ naim ====')
         // console.log(res)
         this.issueDetail = res.data.issue
+        let storageKey = 'issue-' + issId
+        console.log('storageKey = ' + storageKey)
+        localStorage.removeItem(storageKey)
+        localStorage.setItem(storageKey, JSON.stringify(this.issueDetail))
+        console.log(this.issueDetail)
       })
     } catch (err) {
       console.log('==== Issue Detail @ naim ====')
@@ -470,7 +498,11 @@ export default {
     }
   },
   async getIssueDetail (issId) {
-    await this.retrieveIssueDetail(issId)
+    if (store.getters.connectStat) {
+      await this.retrieveIssueDetail(issId)
+    } else {
+      this.searchIssueDetail(issId)
+    }
     return this.issueDetail
   },
 

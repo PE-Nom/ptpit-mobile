@@ -89,12 +89,13 @@ export default {
     window.addEventListener('offline', this.offlineEventHandler, false)
     editstate.productId = -1
     // 開発時のログインバイパス
-    let user = {
-      username: 'nc-manager-001',
-      password: 'nc-manager-001'
+    let user = JSON.parse(localStorage.getItem('login'))
+    console.log(user)
+    if (user !== null) {
+      editstate.user = user
+      await naim.initialize(user)
+      this.loginClose(user)
     }
-    await naim.initialize(user)
-    this.loginClose(user)
   },
   mounted () {
     this.$router.push('/')
@@ -121,6 +122,8 @@ export default {
       console.log(user)
       this.userName = user.username
       editstate.user = user
+      localStorage.removeItem('login')
+      localStorage.setItem('login', JSON.stringify(user))
       this.activeUser = true
       this.showLoginDialog = false
       this.$router.push('/')
@@ -135,6 +138,7 @@ export default {
         password: ''
       }
       editstate.user = user
+      localStorage.removeItem('login')
       this.$router.push('/')
     },
     cancelClose: function () {

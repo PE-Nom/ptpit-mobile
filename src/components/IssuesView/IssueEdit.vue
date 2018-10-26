@@ -639,7 +639,6 @@ export default {
         })
         if (this.product !== -1) {
           let prj = naim.getProject(this.product)
-          // console.log(res)
           let customer = util.getProjectCustomFieldValue(prj, '顧客情報')
           this.customer = customer
         } else {
