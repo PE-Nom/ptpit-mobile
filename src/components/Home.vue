@@ -44,7 +44,7 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style>
+<style scoped>
 .content-field {
   padding-left: 6px;
   padding-right: 6px;

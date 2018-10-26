@@ -1,24 +1,25 @@
 <template>
   <div class="date-picker form-inline">
     <div class="form-group">
-      <select class="year" v-model="year" @change="onChangeYear">
+      <select class="form-control year" v-model="year" @change="onChangeYear">
         <option value="">......</option>
         <option v-for="(year, idx) in years" v-bind:key=idx :value="year">{{year}}</option>
       </select>
-      <label>/</label>
+      <label>Year</label>
     </div>
     <div class="form-group">
-      <select class="mouth" v-model="month" @change="onChangeMonth">
+      <select class="form-control mouth" v-model="month" @change="onChangeMonth">
         <option value="">......</option>
         <option v-for="(month, idx) in months" v-bind:key=idx :value="month">{{month+1}}</option>
       </select>
-      <label>/</label>
+      <label>Mouth</label>
     </div>
     <div class="form-group">
-      <select class="day" v-model="day" @change="onChangeDay">
+      <select class="form-control day" v-model="day" @change="onChangeDay">
         <option value="">......</option>
         <option v-for="(day, idx) in days" v-bind:key=idx :value ="day">{{day}}</option>
       </select>
+      <label>Day</label>
     </div>
   </div>
 </template>
@@ -192,11 +193,8 @@ export default {
 body {
   padding: 20px;
 }
-.year {
-  width: 65px;
-}
-.month .day {
-  width: 25px;
+.date-picker .year .mouth .day {
+  width: 120px;
 }
 .form-group {
   margin-right: 10px;
