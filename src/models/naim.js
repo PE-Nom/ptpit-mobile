@@ -2,6 +2,7 @@ import store from '../store.js'
 import redmine from './redmine.js'
 import util from './util.js'
 import fileUploader from './fileUploader.js'
+import pendingRequestManager from './pendingRequestManager.js'
 
 export default {
 
@@ -31,7 +32,7 @@ export default {
       console.log('naim.initialize @ return from fileUploader.pingtoServer')
       console.log(resp)
       // alert(resp.data.dateandtime)
-      //
+      store.commit('setConnectStat', {connectStat: true})
       await this.retrieveUsers()
       this.getUserId(user.username)
       await this.retrieveTrackers()
@@ -447,18 +448,23 @@ export default {
   async retrieveIssues (trackerId) {
     try {
       console.log('### retrieveIssues ###')
-      // Issues List
-      this.issues = []
-      console.log(' call redmine.issues')
-      await redmine.issues(trackerId, res => {
-        console.log('==== Issues @ naim ====')
-        res.data.issues.forEach(el => {
-          this.issues.push(el)
+      if (store.getters.connectStat) {
+        // Issues List
+        this.issues = []
+        console.log(' call redmine.issues')
+        await redmine.issues(trackerId, res => {
+          console.log('==== Issues @ naim ====')
+          res.data.issues.forEach(el => {
+            this.issues.push(el)
+          })
         })
-      })
-      localStorage.removeItem('issues')
-      localStorage.setItem('issues', JSON.stringify(this.issues))
-      console.log(this.issues)
+        localStorage.removeItem('issues')
+        localStorage.setItem('issues', JSON.stringify(this.issues))
+        console.log(this.issues)
+      } else {
+        console.log('read issues from localStorage')
+        this.issues = JSON.parse(localStorage.getItem('issues'))
+      }
     } catch (err) {
       console.log('err @ retrieveIssues')
       console.log(err)
@@ -508,23 +514,49 @@ export default {
 
   async createIssue (qobj) {
     try {
-      let ret = await redmine.createIssue(qobj, res => {
-        console.log('==== Create Issue @ naim ====')
-        console.log(res)
-      })
-      return ret
+      if (store.getters.connectStat) {
+        let ret = await redmine.createIssue(qobj, res => {
+          console.log('==== Create Issue @ naim ====')
+          console.log(res)
+        })
+        return ret
+      } else {
+        let pendingRequest = {
+          request: 'create',
+          id: '-1',
+          query: qobj
+        }
+        pendingRequestManager.push(pendingRequest)
+        let ret = {
+          data: {
+            issue: {
+              id: -1
+            }
+          }
+        }
+        return ret
+      }
     } catch (err) {
       throw err
     }
   },
   updateIssue: async function (issId, qobj) {
     try {
-      // console.log('updateIssue @ naim : ' + issId)
-      // console.log(qstr)
-      await redmine.updateIssue(issId, qobj, res => {
-        console.log('==== Update Issue @ naim ====')
-        console.log(res)
-      })
+      if (store.getters.connectStat) {
+        // console.log('updateIssue @ naim : ' + issId)
+        // console.log(qstr)
+        await redmine.updateIssue(issId, qobj, res => {
+          console.log('==== Update Issue @ naim ====')
+          console.log(res)
+        })
+      } else {
+        let pendingRequest = {
+          request: 'update',
+          id: issId,
+          query: qobj
+        }
+        pendingRequestManager.push(pendingRequest)
+      }
     } catch (err) {
       console.log(err)
       throw err
@@ -535,16 +567,33 @@ export default {
     this.issues = []
   },
 
-  async uploadFile (file, mediaData, imageDescription) {
+  async uploadFile (issueId, file, mediaData, imageDescription) {
     console.log('uploadFile @ naim')
     let ret = null
     try {
-      console.log(file)
-      ret = await redmine.attachingFiles(file, res => {
-        // console.log('==== uploadFiles @ naim ====')
-        // console.log(res)
-      })
-      return ret
+      if (store.getters.connectStat) {
+        console.log(file)
+        ret = await redmine.attachingFiles(file, res => {
+          // console.log('==== uploadFiles @ naim ====')
+          // console.log(res)
+        })
+        return ret
+      } else {
+        let pendingRequest = {
+          request: 'file attach',
+          id: issueId,
+          description: imageDescription,
+          mediaData: mediaData,
+          name: file.name,
+          size: file.size,
+          file_property_bag: {
+            type: file.type,
+            lastModified: file.lastModified
+          }
+        }
+        pendingRequestManager.push(pendingRequest)
+        return ret
+      }
     } catch (err) {
       throw err
     }

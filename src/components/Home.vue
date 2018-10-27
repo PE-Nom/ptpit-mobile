@@ -1,6 +1,6 @@
 <template>
   <div class="content-field">
-    <div class="username" style="font-size:'x-small;'">ログイン：{{userName}}</div>
+    <div class="username" style="font-size:'x-small;'">ログイン：{{userName}}({{connectStatus}})</div>
     <div class="banner-title">
       <div>
         <div>
@@ -31,6 +31,11 @@ export default {
       subname: 'Management System',
       corporate: 'by Pitarpit Co.,Ltd.',
       userName: ''
+    }
+  },
+  computed: {
+    connectStatus: function () {
+      return this.$store.getters.connectStat ? 'on-line' : 'off-line'
     }
   },
   created () {

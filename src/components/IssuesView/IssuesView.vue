@@ -1,6 +1,6 @@
 <template>
   <div class="issues-view">
-    <div class="username" style="font-size:'x-small;'">ログイン：{{userName}}</div>
+    <div class="username" style="font-size:'x-small;'">ログイン：{{userName}}({{connectStatus}})</div>
     <div class="header-field">
       <div class="table-row header">
         <div class="message-field">
@@ -104,12 +104,10 @@ export default {
     }
   },
   computed: {
+    connectStatus: function () {
+      return this.$store.getters.connectStat ? 'on-line' : 'off-line'
+    },
     connected: function () {
-      if (this.$store.getters.connectStat) {
-        this.connectStatus = 'on-line'
-      } else {
-        this.connectStatus = 'off-line'
-      }
       return this.$store.getters.connectStat
     },
     issueslist () {

@@ -6,7 +6,7 @@
     <b-navbar v-else type="dark" variant="success">
       <b-navbar-brand to="/pendingrequests">&lt;&lt; 未登録指摘一覧</b-navbar-brand>
     </b-navbar>
-    <div class="username" style="font-size:'x-small;'">ログイン：{{userName}}</div>
+    <div class="username" style="font-size:'x-small;'">ログイン：{{userName}}({{connectStatus}})</div>
     <div class="operation-field">
       <b-button v-if="(issue && issue.issue.id === -1)"
         class="control-button create"
@@ -521,6 +521,7 @@ export default {
           console.log('IssueEdit.uploadFile')
           console.log(attachment)
           let res = await naim.uploadFile(
+            this.issueId,
             attachment.attachment.file,
             attachment.attachment.mediaData,
             attachment.attachment.description)

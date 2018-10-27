@@ -84,6 +84,7 @@
             <div class="wrapper attributes data">
               <div v-for="(val, idx) in attachmentsInfoColumns" v-bind:key=idx :class="[val]">
                 <a href="#!" v-if="val==='filename'" v-on:click="previewAttachment(entry)">{{entry[val]}}</a>
+                <span v-else-if="val==='description'" v-tooltip="entry[val]">{{entry[val]}}</span>
                 <span v-else>{{entry[val]}}</span>
               </div>
             </div>
@@ -381,17 +382,17 @@ export default {
 }
 
 .id {
-  width: 5vw;
+  width: 10%;
 }
 .filename {
-  width: 30vw;
+  width: 60%;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   text-align: left;
 }
 .description {
-  width: 30vw;
+  width: 30%;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
