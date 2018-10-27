@@ -190,6 +190,7 @@ export default {
           currentProduct: this.product
         }
         editstate.issue = issue
+        editstate.previousPath = '/issues'
         this.$router.push('issueedit')
       }
     },
@@ -206,6 +207,7 @@ export default {
         currentProduct: -1
       }
       editstate.issue = issue
+      editstate.previousPath = '/issues'
       this.$router.push('issueedit')
     },
     async refreshList () {
@@ -264,24 +266,13 @@ export default {
   font-style: italic;
   font-weight: bold;
 }
-.wrapper {
-  display: flex;
-  display: -webkit-flex;
-  flex-direction: row;
-  -webkit-flex-direction: row;
-}
-/* growable wrappers */
-.attributes {
-  flex-grow: 0;
-  -webkit-flex-grow: 0;
+/* list header */
+.header-field {
+  height: 120px;
 }
 .table-row {
   border-bottom: 1px solid #e0e0e0;
   border-collapse: collapse;
-}
-/* list header */
-.header-field {
-  height: 120px;
 }
 .table-row.header {
   height: 100%;
@@ -342,6 +333,17 @@ export default {
   float: left;
 }
 /* list data */
+.wrapper {
+  display: flex;
+  display: -webkit-flex;
+  flex-direction: row;
+  -webkit-flex-direction: row;
+}
+/* growable wrappers */
+.attributes {
+  flex-grow: 0;
+  -webkit-flex-grow: 0;
+}
 .data-field {
   height: 600px;
   overflow-y: auto;

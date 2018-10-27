@@ -7,6 +7,7 @@ export default {
     productId: -1,
     issue: null,
     pendingRequest: null,
-    attachment: null
+    attachment: null,
+    previousPath: null
   }
 }

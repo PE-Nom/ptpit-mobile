@@ -24,7 +24,7 @@ const store = new Vuex.Store({
     setConnectStat (state, payload) {
       state.connectStat = payload.connectStat
       console.log(state.connectStat)
-      alert('connectStat is ' + state.connectStat)
+      // alert('connectStat is ' + state.connectStat)
       let connection = navigator.connection
       console.log(connection)
     },

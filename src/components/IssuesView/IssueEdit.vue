@@ -164,7 +164,7 @@
           <b-card-header header-tag="header" class="p-1" role="tab">
             <b-btn block href="#" v-b-toggle.nonconformity v-bind:variant="nonConformityVariant">不適合内容</b-btn>
           </b-card-header>
-          <b-collapse id="nonconformity" accordion="nonconformity-items" role="tabpanel">
+          <b-collapse id="nonconformity" :visible="this.issStatus==='登録'" accordion="nonconformity-items" role="tabpanel">
             <b-card-body>
               <div class="nonconformity-item-field">
                 <NonConformityItem
@@ -186,7 +186,7 @@
           <b-card-header header-tag="header" class="p-1" role="tab">
             <b-btn block href="#" v-b-toggle.correct v-bind:variant="correctVariant">修正処置</b-btn>
           </b-card-header>
-          <b-collapse id="correct" accordion="nonconformity-items" role="tabpanel">
+          <b-collapse id="correct" :visible="this.issStatus==='登録'" accordion="nonconformity-items" role="tabpanel">
             <b-card-body>
               <div class="nonconformity-item-field">
                 <NonConformityItem
@@ -208,7 +208,7 @@
           <b-card-header header-tag="header" class="p-1" role="tab">
             <b-btn block href="#" v-b-toggle.cause v-bind:variant="causeVariant">不適合原因</b-btn>
           </b-card-header>
-          <b-collapse id="cause" accordion="nonconformity-items" role="tabpanel">
+          <b-collapse id="cause" :visible="this.issStatus==='原因分析'" accordion="nonconformity-items" role="tabpanel">
             <b-card-body>
               <div class="nonconformity-item-field">
                 <NonConformityItem
@@ -230,7 +230,7 @@
           <b-card-header header-tag="header" class="p-1" role="tab">
             <b-btn block href="#" v-b-toggle.countermeasure v-bind:variant="counterMeasureVariant">是正処置</b-btn>
           </b-card-header>
-          <b-collapse id="countermeasure" accordion="nonconformity-items" role="tabpanel">
+          <b-collapse id="countermeasure" :visible="this.issStatus==='是正処置'" accordion="nonconformity-items" role="tabpanel">
             <b-card-body>
               <div class="nonconformity-item-field">
                 <NonConformityItem
@@ -252,7 +252,7 @@
           <b-card-header header-tag="header" class="p-1" role="tab">
             <b-btn block href="#" v-b-toggle.result v-bind:variant="resultVariant">効果確認</b-btn>
           </b-card-header>
-          <b-collapse id="result" accordion="nonconformity-items" role="tabpanel">
+          <b-collapse id="result" :visible="this.issStatus==='効果確認'" accordion="nonconformity-items" role="tabpanel">
             <b-card-body>
               <div class="nonconformity-item-field">
                 <NonConformityItem
@@ -274,7 +274,7 @@
           <b-card-header header-tag="header" class="p-1" role="tab">
             <b-btn block href="#" v-b-toggle.rollout v-bind:variant="rollOutVariant">水平展開</b-btn>
           </b-card-header>
-          <b-collapse id="rollout" accordion="nonconformity-items" role="tabpanel">
+          <b-collapse id="rollout" :visible="this.issStatus==='水平展開'" accordion="nonconformity-items" role="tabpanel">
             <b-card-body>
               <div class="nonconformity-item-field">
                 <NonConformityItem
@@ -316,6 +316,13 @@ export default {
   computed: {
     connectStatus: function () {
       return this.$store.getters.connectStat ? 'on-line' : 'off-line'
+    },
+    showNavbar: function () {
+      let show = true
+      if (editstate.previousPath === '/pendingrequests') {
+        show = false
+      }
+      return show
     },
     nonConformityVariant () {
       let myStatusIdx = this.findStatusIndex(this.issDetailItems[0].conditions.currentState)
@@ -385,7 +392,6 @@ export default {
     let issDetailInfoStatusName = ['入力待ち', '承認待ち', '完了']
 
     return {
-      showNavbar: true,
       message: '「指摘編集」 工事中のテンポラリ表示',
       userName: '',
 
@@ -850,7 +856,7 @@ export default {
   padding: 0.25rem 0.25rem;
 }
 .basic-item-field {
-  height: 550px;
+  height: 500px;
   overflow-y: auto;
 }
 
@@ -869,7 +875,7 @@ export default {
   padding-top: 6px;
   padding-left: 6px;
   padding-right: 6px;
-  height: 100%;
+  height: 500px;
   overflow: auto;
   box-shadow: 2px 2px 10px rgba(63, 63, 63, 0.2);
 }
