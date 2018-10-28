@@ -100,7 +100,6 @@
 </template>
 
 <script>
-import config from '../../config.js'
 import AttachmentDialog from './AttachmentDialog.vue'
 export default {
   name: 'NonConformityItem',
@@ -250,19 +249,9 @@ export default {
       console.log(attachment)
       this.$emit('attach', attachment)
     },
-    previewAttachment: function (attachment) {
-      console.log('select attachment :')
-      console.log('  filename :' + attachment.filename)
-      console.log('  content_type : ' + attachment.content_type)
-      console.log('  content_url : ' + attachment.content_url)
-      console.log('  id : ' + attachment.id)
-      if (attachment.attachment !== null) {
-        let contentUrl = URL.createObjectURL(attachment.attachment.file)
-        window.open(contentUrl)
-      } else {
-        let contentUrl = config.BaseURL + '/data/' + this.itemdata.id + '/' + attachment.id + '_' + attachment.filename
-        window.open(contentUrl)
-      }
+    previewAttachment (attachment) {
+      console.log('NonConformityitem.previewAttachment')
+      this.$emit('previewAttachment', attachment)
     }
   },
   created () {

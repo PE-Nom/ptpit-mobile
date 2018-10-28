@@ -175,6 +175,7 @@
                   @accept="accept"
                   @cancel="cancel"
                   @attach="attach"
+                  @previewAttachment="previewAttachment"
                   @contentChanged="contentChanged">
                 </NonConformityItem>
               </div>
@@ -197,6 +198,7 @@
                   @accept="accept"
                   @cancel="cancel"
                   @attach="attach"
+                  @previewAttachment="previewAttachment"
                   @contentChanged="contentChanged">
                 </NonConformityItem>
               </div>
@@ -219,6 +221,7 @@
                   @accept="accept"
                   @cancel="cancel"
                   @attach="attach"
+                  @previewAttachment="previewAttachment"
                   @contentChanged="contentChanged">
                 </NonConformityItem>
               </div>
@@ -241,6 +244,7 @@
                   @accept="accept"
                   @cancel="cancel"
                   @attach="attach"
+                  @previewAttachment="previewAttachment"
                   @contentChanged="contentChanged">
                 </NonConformityItem>
               </div>
@@ -263,6 +267,7 @@
                   @accept="accept"
                   @cancel="cancel"
                   @attach="attach"
+                  @previewAttachment="previewAttachment"
                   @contentChanged="contentChanged">
                 </NonConformityItem>
               </div>
@@ -285,6 +290,7 @@
                   @accept="accept"
                   @cancel="cancel"
                   @attach="attach"
+                  @previewAttachment="previewAttachment"
                   @contentChanged="contentChanged">
                 </NonConformityItem>
               </div>
@@ -298,6 +304,7 @@
 </template>
 
 <script>
+import config from '../../config.js'
 import naim from '../../models/naim.js'
 import util from '../../models/util.js'
 import editstate from '../../models/editState.js'
@@ -518,6 +525,23 @@ export default {
       this.attachmentFiles.push(item)
       this.itemdata[idx].attachments.push(item)
       this.setIssueDuty()
+    },
+    previewAttachment (attachment) {
+      console.log('select attachment :')
+      console.log('  filename :' + attachment.filename)
+      console.log('  content_type : ' + attachment.content_type)
+      console.log('  content_url : ' + attachment.content_url)
+      console.log('  id : ' + attachment.id)
+      console.log(attachment)
+      // editstate.attachment = attachment
+      // this.$router.push('/attachmentviewer')
+      let contentUrl
+      if (attachment.attachment !== null) {
+        contentUrl = URL.createObjectURL(attachment.attachment.file)
+      } else {
+        contentUrl = config.BaseURL + '/data/' + this.issue.id + '/' + attachment.id + '_' + attachment.filename
+      }
+      window.open(contentUrl)
     },
     // ------------------
     // DataBase 更新
