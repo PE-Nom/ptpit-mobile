@@ -158,7 +158,7 @@ export default {
   methods: {
     filterProduct () {
       let issues = []
-      if (this.product === -1) {
+      if (this.product < 0) {
         issues = this.issues.slice(0)
       } else {
         issues = this.issues.filter(issue => {
@@ -199,13 +199,10 @@ export default {
       console.log('createIssue')
       this.selectedId = -1
       let issue = {
-        issue: {
-          id: -1,
-          subject: '新規登録の件名',
-          project: {name: '新規登録時の製品名'},
-          description: '新規登録の説明'
-        },
-        currentProduct: -1
+        id: -1,
+        subject: '新規登録の件名',
+        project: {name: '新規登録時の製品名'},
+        description: '新規登録の説明'
       }
       editstate.issue = issue
       editstate.previousPath = '/issues'

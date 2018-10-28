@@ -143,13 +143,10 @@ export default {
       console.log('createIssue')
       this.selectedId = -1
       let issue = {
-        issue: {
-          id: -1,
-          subject: '新規登録の件名',
-          project: {name: '新規登録時の製品名'},
-          description: '新規登録の説明'
-        },
-        currentProduct: -1
+        id: -1,
+        subject: '新規登録の件名',
+        project: {name: '新規登録時の製品名'},
+        description: '新規登録の説明'
       }
       editstate.issue = issue
       editstate.previousPath = '/pendingrequests'
@@ -244,7 +241,7 @@ export default {
             id = ret.data.issue.id
           } else if (request.value.request === 'update') {
             console.log('upload update request')
-            id = request.value.id
+            id = request.value.id < 0 ? id : request.value.id
             await naim.updateIssue(id, request.value.query)
           } else if (request.value.request === 'file attach') {
             console.log('upload attachingFile request')
@@ -256,6 +253,9 @@ export default {
         }
         await naim.retrieveIssues()
         this.retrievePendingRequests()
+
+        localStorage.removeItem('pendingIssueId')
+        localStorage.setItem('pendingIssueId', 0)
         this.uploading = false
       }
     },

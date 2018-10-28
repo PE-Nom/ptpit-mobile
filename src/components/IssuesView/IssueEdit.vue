@@ -8,10 +8,10 @@
     </b-navbar>
     <div class="username" style="font-size:'x-small;'">ログイン：{{userName}}({{connectStatus}})</div>
     <div class="operation-field">
-      <b-button v-if="(issue && issue.id === -1)"
+      <b-button v-if="issue && issue.id < 0"
         class="control-button create"
         variant="success"
-        v-bind:disabled="(!issueDuty)"
+        v-bind:disabled="!issueDuty"
         @click='createInfo'>
         登録
       </b-button>
@@ -79,7 +79,7 @@
                       id="product-name"
                       v-model="product"
                       :options="productOptions"
-                      :disabled="issue && issue.id !== -1"
+                      :disabled="issue && issue.id >= 0"
                       @change="productChanged">
                     </b-form-select>
                   </div>
@@ -321,10 +321,10 @@ export default {
     DateSelector
   },
   computed: {
-    connectStatus: function () {
+    connectStatus () {
       return this.$store.getters.connectStat ? 'on-line' : 'off-line'
     },
-    showNavbar: function () {
+    showNavbar () {
       let show = true
       if (editstate.previousPath === '/pendingrequests') {
         show = false
@@ -402,6 +402,7 @@ export default {
       message: '「指摘編集」 工事中のテンポラリ表示',
       userName: '',
 
+      issue: null,
       dateFormat: 'YYYY-MM-DD',
       currentDate: '2018-07-25',
       minDate: '2018-01-01',
@@ -436,7 +437,7 @@ export default {
         colorVariant = 'danger'
       } else if (myidx < currentidx) {
         colorVariant = 'info'
-      } else if (currentidx === -1) {
+      } else if (currentidx < 0) {
         colorVariant = 'default'
       } else {
         colorVariant = 'warning'
@@ -672,7 +673,7 @@ export default {
             console.log('selected product is ' + option.value)
           }
         })
-        if (this.product !== -1) {
+        if (this.product >= 0) {
           let prj = naim.getProject(this.product)
           let customer = util.getProjectCustomFieldValue(prj, '顧客情報')
           this.customer = customer
@@ -702,7 +703,7 @@ export default {
         }
         this.productOptions.push(option)
       }
-      if (this.issue && this.issue.id !== -1) {
+      if (this.issue && this.issue.id >= 0) {
         this.product = this.issue.project.id
       } else {
         this.product = this.productOptions[0].value
@@ -713,7 +714,7 @@ export default {
       console.log('setMembershipOptions')
       this.membershipOptions = []
       this.membershipOptions.push({value: -1, text: '-'})
-      if (this.product !== -1) {
+      if (this.product >= 0) {
         let membership = naim.getProjectMemberships(this.product)
         console.log(membership)
         for (let member of membership) {
@@ -777,7 +778,7 @@ export default {
       if (this.issue) {
         console.log(this.issue)
         let customer = ''
-        if (this.issue.id !== -1) {
+        if (this.issue.id >= 0) {
           let prj = naim.getProject(this.issue.project.id)
           customer = util.getProjectCustomFieldValue(prj, '顧客情報')
           this.issDetail = await naim.getIssueDetail(this.issue.id)
@@ -821,6 +822,7 @@ export default {
     console.log('IssueEdit created')
     this.userName = editstate.user.username
     this.issue = editstate.issue
+    console.log(this.issue)
     this.initializeProps()
     this.setData()
   },

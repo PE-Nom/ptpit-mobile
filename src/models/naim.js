@@ -22,6 +22,7 @@ export default {
   online: true,
   userId: null,
   rootPrj: null,
+  pendingIssueId: 0,
 
   async initialize (user) {
     console.log('initialize @ naim')
@@ -62,6 +63,11 @@ export default {
       this.availablePrjs = JSON.parse(localStorage.getItem('availablePrjs'))
       this.activities = JSON.parse(localStorage.getItem('activities'))
       this.documentCategories = JSON.parse(localStorage.getItem('documentCategories'))
+    }
+    if ('pendingIssueId' in localStorage) {
+      this.pendingIssueId = JSON.parse(localStorage.getItem('pendingIssueId'))
+    } else {
+      localStorage.setItem('pendingIssueId', this.pendingIssueId)
     }
   },
   finalize () {
@@ -534,19 +540,22 @@ export default {
         })
         return ret
       } else {
+        this.pendingIssueId = this.pendingIssueId - 1
         let pendingRequest = {
           request: 'create',
-          id: '-1',
+          id: this.pendingIssueId,
           query: qobj
         }
         pendingRequestManager.push(pendingRequest)
         let ret = {
           data: {
             issue: {
-              id: -1
+              id: this.pendingIssueId
             }
           }
         }
+        localStorage.removeItem('pendingIssueId')
+        localStorage.setItem('pendingIssueId', this.pendingIssueId)
         return ret
       }
     } catch (err) {
