@@ -66,7 +66,7 @@ export default {
       'background-color': '#FFFFFF'
     }
     return {
-      columns: ['key', 'request', 'id', 'subject', 'description'],
+      columns: ['key', 'request', 'id', 'name', 'subject', 'description'],
       requestObjs: [],
       requestStrs: [],
       message: '不適合管理　未登録の不適合一覧',
@@ -102,6 +102,7 @@ export default {
           rec = {
             key: element.key,
             id: element.value.id,
+            name: element.value.custom_field_name,
             request: element.value.request,
             subject: element.value.name,
             description: element.value.description
@@ -110,6 +111,7 @@ export default {
           rec = {
             key: element.key,
             id: element.value.id,
+            name: naim.getIssueStatusNameById(element.value.query.issue.status_id),
             request: element.value.request,
             subject: element.value.query.issue.subject,
             description: element.value.query.issue.description
@@ -184,10 +186,16 @@ export default {
       try {
         // ここでFileオブジェクトを再構築してproperties にセットする。
         let file = this.createFile(request)
-        let res = await naim.uploadFile(file, request.value.mediaData, request.value.description)
+        let res = await naim.uploadFile(
+          id,
+          request.value.custom_field_name,
+          file,
+          request.value.mediaData,
+          request.value.description)
         if (res) {
           let token = res.data.upload.token
           let attachId = res.data.upload.id
+          let filename = request.value.custom_field_name + '_' + request.value.name
           console.log('uploaded file')
           console.log('token : ' + token)
           console.log('id : ' + attachId)
@@ -195,14 +203,17 @@ export default {
             'issue': {
               'uploads': [{
                 'token': token,
-                'filename': request.value.name,
+                'filename': filename,
                 'description': request.value.description,
                 'content_type': request.value.file_property_bag.type
               }]
             }
           }
           await naim.updateIssue(id, qobj)
-          await fileUploader.uploadFile(id, attachId, file)
+          await fileUploader.uploadFile(
+            id,
+            attachId + '_' + request.value.custom_field_name,
+            file)
         }
       } catch (err) {
         console.log('error has occured @ attachingFile')

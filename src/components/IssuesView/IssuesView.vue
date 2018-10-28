@@ -185,11 +185,12 @@ export default {
         alert('オフラインモード　詳細情報を取得できません')
       } else {
         this.selectedId = entry.id
-        let issue = {
-          issue: entry.issue,
-          currentProduct: this.product
-        }
-        editstate.issue = issue
+        // let issue = {
+        // issue: entry.issue,
+        // currentProduct: this.product
+        // }
+        // editstate.issue = issue
+        editstate.issue = entry.issue
         editstate.previousPath = '/issues'
         this.$router.push('issueedit')
       }

@@ -8,7 +8,7 @@
     </b-navbar>
     <div class="username" style="font-size:'x-small;'">ログイン：{{userName}}({{connectStatus}})</div>
     <div class="operation-field">
-      <b-button v-if="(issue && issue.issue.id === -1)"
+      <b-button v-if="(issue && issue.id === -1)"
         class="control-button create"
         variant="success"
         v-bind:disabled="(!issueDuty)"
@@ -79,7 +79,7 @@
                       id="product-name"
                       v-model="product"
                       :options="productOptions"
-                      :disabled="issue && issue.issue.id !== -1"
+                      :disabled="issue && issue.id !== -1"
                       @change="productChanged">
                     </b-form-select>
                   </div>
@@ -528,6 +528,7 @@ export default {
           console.log(attachment)
           let res = await naim.uploadFile(
             this.issueId,
+            attachment.attachment.name,
             attachment.attachment.file,
             attachment.attachment.mediaData,
             attachment.attachment.description)
@@ -677,8 +678,8 @@ export default {
         }
         this.productOptions.push(option)
       }
-      if (this.issue && this.issue.issue.id !== -1) {
-        this.product = this.issue.issue.project.id
+      if (this.issue && this.issue.id !== -1) {
+        this.product = this.issue.project.id
       } else {
         this.product = this.productOptions[0].value
       }
@@ -699,8 +700,8 @@ export default {
           this.membershipOptions.push(option)
         }
       }
-      if (this.issue.issue.assigned_to) {
-        this.assigned = this.issue.issue.assigned_to.id
+      if (this.issue.assigned_to) {
+        this.assigned = this.issue.assigned_to.id
       } else {
         this.assigned = this.membershipOptions[0].value
       }
@@ -752,13 +753,13 @@ export default {
       if (this.issue) {
         console.log(this.issue)
         let customer = ''
-        if (this.issue.issue.id !== -1) {
-          let prj = naim.getProject(this.issue.issue.project.id)
-          // console.log(prj)
+        if (this.issue.id !== -1) {
+          let prj = naim.getProject(this.issue.project.id)
           customer = util.getProjectCustomFieldValue(prj, '顧客情報')
-          this.issDetail = await naim.getIssueDetail(this.issue.issue.id)
+          this.issDetail = await naim.getIssueDetail(this.issue.id)
           this.issStatus = this.issDetail.status.name
           this.setIssDetail()
+          console.log('#####')
           console.log(this.issDetail)
         } else {
           customer = '未定'
@@ -766,11 +767,11 @@ export default {
           this.issStatus = '登録'
           this.initializeProps()
         }
-        this.issueId = this.issue.issue.id
-        this.created_on = this.issue.issue.created_on
-        this.due_date = this.issue.issue.due_date ? this.issue.issue.due_date : util.getNowYMD()
-        this.start_date = this.issue.issue.start_date ? this.issue.issue.start_date : util.getNowYMD()
-        this.issueSubject = this.issue.issue.subject
+        this.issueId = this.issue.id
+        this.created_on = this.issue.created_on
+        this.due_date = this.issue.due_date ? this.issue.due_date : util.getNowYMD()
+        this.start_date = this.issue.start_date ? this.issue.start_date : util.getNowYMD()
+        this.issueSubject = this.issue.subject
         this.customer = customer
         this.setProductOptions()
         this.resetIssueDuty()

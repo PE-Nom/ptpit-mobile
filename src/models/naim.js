@@ -239,6 +239,12 @@ export default {
     })
     return issueStatus[0].id
   },
+  getIssueStatusNameById (statusId) {
+    let issueStatus = this.issueStatuses.filter(status => {
+      return status.id === statusId
+    })
+    return issueStatus[0].name
+  },
 
   // ------------------
   // Issue Priority
@@ -478,6 +484,7 @@ export default {
 
   // redmineに問い合わせ
   async retrieveIssueDetail (issId) {
+    console.log('retrieveIssueDetail')
     try {
       await redmine.getIssue(issId, res => {
         // console.log('==== Issue Detail @ naim ====')
@@ -495,6 +502,11 @@ export default {
     }
   },
   // localStorageを検索
+  // オフライン時の変更有無を判断する。
+  // 変更の有無は indexedDB に同一の issIdがあるかで判断する。
+  // indexedDBにある場合（オフライン時に変更されている場合）：indexedDB から取り出す
+  // indexedDBになく かつ オフラインのとき：localStorage から取り出す
+  // indexedDBになく かつ オンラインのとき：redmineに問い合わせる
   searchIssueDetail: function (issId) {
     let storageKey = 'issue-' + issId
     if (storageKey in localStorage) {
@@ -504,6 +516,7 @@ export default {
     }
   },
   async getIssueDetail (issId) {
+    console.log('getIssueDetail')
     if (store.getters.connectStat) {
       await this.retrieveIssueDetail(issId)
     } else {
@@ -540,7 +553,7 @@ export default {
       throw err
     }
   },
-  updateIssue: async function (issId, qobj) {
+  async updateIssue (issId, qobj) {
     try {
       if (store.getters.connectStat) {
         // console.log('updateIssue @ naim : ' + issId)
@@ -567,7 +580,7 @@ export default {
     this.issues = []
   },
 
-  async uploadFile (issueId, file, mediaData, imageDescription) {
+  async uploadFile (issueId, customFieldName, file, mediaData, imageDescription) {
     console.log('uploadFile @ naim')
     let ret = null
     try {
@@ -582,6 +595,7 @@ export default {
         let pendingRequest = {
           request: 'file attach',
           id: issueId,
+          custom_field_name: customFieldName,
           description: imageDescription,
           mediaData: mediaData,
           name: file.name,
