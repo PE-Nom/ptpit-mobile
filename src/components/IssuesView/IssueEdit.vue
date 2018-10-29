@@ -18,7 +18,7 @@
       <b-button v-else
         class="control-button update"
         variant="success"
-        v-bind:disabled="!issueDuty"
+        v-bind:disabled="!issueDuty || (!showNavbar && connected)"
         @click='updateInfo'>
         更新
       </b-button>
@@ -321,6 +321,9 @@ export default {
     DateSelector
   },
   computed: {
+    connected () {
+      return this.$store.getters.connectStat
+    },
     connectStatus () {
       return this.$store.getters.connectStat ? 'on-line' : 'off-line'
     },
