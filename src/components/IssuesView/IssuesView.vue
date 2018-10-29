@@ -185,12 +185,7 @@ export default {
         alert('オフラインモード　詳細情報を取得できません')
       } else {
         this.selectedId = entry.id
-        // let issue = {
-        // issue: entry.issue,
-        // currentProduct: this.product
-        // }
-        // editstate.issue = issue
-        editstate.issue = entry.issue
+        editstate.issueId = entry.id
         editstate.previousPath = '/issues'
         this.$router.push('issueedit')
       }
@@ -198,13 +193,7 @@ export default {
     createIssue () {
       console.log('createIssue')
       this.selectedId = -1
-      let issue = {
-        id: -1,
-        subject: '新規登録の件名',
-        project: {name: '新規登録時の製品名'},
-        description: '新規登録の説明'
-      }
-      editstate.issue = issue
+      editstate.issueId = -1
       editstate.previousPath = '/issues'
       this.$router.push('issueedit')
     },

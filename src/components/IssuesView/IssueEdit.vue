@@ -540,7 +540,7 @@ export default {
       if (attachment.attachment !== null) {
         contentUrl = URL.createObjectURL(attachment.attachment.file)
       } else {
-        contentUrl = config.BaseURL + '/data/' + this.issue.id + '/' + attachment.id + '_' + attachment.filename
+        contentUrl = config.BaseURL + '/data/' + this.issueId + '/' + attachment.id + '_' + attachment.filename
       }
       window.open(contentUrl)
     },
@@ -704,8 +704,8 @@ export default {
         }
         this.productOptions.push(option)
       }
-      if (this.issue && this.issue.id >= 0) {
-        this.product = this.issue.project.id
+      if (this.issueId >= 0) {
+        this.product = this.issDetail.project.id
       } else {
         this.product = this.productOptions[0].value
       }
@@ -726,8 +726,8 @@ export default {
           this.membershipOptions.push(option)
         }
       }
-      if (this.issue.assigned_to) {
-        this.assigned = this.issue.assigned_to.id
+      if (this.issDetail && this.issDetail.assigned_to) {
+        this.assigned = this.issDetail.assigned_to.id
       } else {
         this.assigned = this.membershipOptions[0].value
       }
@@ -776,32 +776,30 @@ export default {
     },
     async setData () {
       console.log('IssueEdit.setData')
-      if (this.issue) {
-        console.log(this.issue)
-        let customer = ''
-        if (this.issue.id >= 0) {
-          let prj = naim.getProject(this.issue.project.id)
-          customer = util.getProjectCustomFieldValue(prj, '顧客情報')
-          this.issDetail = await naim.getIssueDetail(this.issue.id)
-          this.issStatus = this.issDetail.status.name
-          this.setIssDetail()
-          console.log('#####')
-          console.log(this.issDetail)
-        } else {
-          customer = '未定'
-          this.issDetail = null
-          this.issStatus = '登録'
-          this.initializeProps()
-        }
-        this.issueId = this.issue.id
-        this.created_on = this.issue.created_on
-        this.due_date = this.issue.due_date ? this.issue.due_date : util.getNowYMD()
-        this.start_date = this.issue.start_date ? this.issue.start_date : util.getNowYMD()
-        this.issueSubject = this.issue.subject
-        this.customer = customer
-        this.setProductOptions()
-        this.resetIssueDuty()
+      if (this.issueId >= 0) {
+        this.issDetail = await naim.getIssueDetail(this.issueId)
+        this.created_on = this.issDetail.created_on
+        this.due_date = this.issDetail.due_date ? this.issDetail.due_date : util.getNowYMD()
+        this.start_date = this.issDetail.start_date ? this.issDetail.start_date : util.getNowYMD()
+        this.issueSubject = this.issDetail.subject
+        this.issStatus = this.issDetail.status.name
+        let prj = naim.getProject(this.issDetail.project.id)
+        this.customer = util.getProjectCustomFieldValue(prj, '顧客情報')
+        this.setIssDetail()
+        console.log('#####')
+        console.log(this.issDetail)
+      } else {
+        this.issDetail = null
+        this.created_on = ''
+        this.due_date = util.getNowYMD()
+        this.start_date = util.getNowYMD()
+        this.issueSubject = '新規登録の件名'
+        this.issStatus = '登録'
+        this.customer = '未定'
+        this.initializeProps()
       }
+      this.setProductOptions()
+      this.resetIssueDuty()
     },
     initializeProps () {
       this.itemdata = []
@@ -822,8 +820,8 @@ export default {
   created () {
     console.log('IssueEdit created')
     this.userName = editstate.user.username
-    this.issue = editstate.issue
-    console.log(this.issue)
+    this.issueId = editstate.issueId
+    console.log(this.issueId)
     this.initializeProps()
     this.setData()
   },
