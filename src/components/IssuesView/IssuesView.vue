@@ -192,8 +192,8 @@ export default {
     },
     createIssue () {
       console.log('createIssue')
-      this.selectedId = -1
-      editstate.issueId = -1
+      this.selectedId = -10
+      editstate.issueId = '***'
       editstate.previousPath = '/issues'
       this.$router.push('issueedit')
     },

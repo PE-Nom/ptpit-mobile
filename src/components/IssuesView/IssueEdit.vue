@@ -8,7 +8,7 @@
     </b-navbar>
     <div class="username" style="font-size:'x-small;'">ログイン：{{userName}}({{connectStatus}})</div>
     <div class="operation-field">
-      <b-button v-if="issue && issue.id < 0"
+      <b-button v-if="issueId === '***'"
         class="control-button create"
         variant="success"
         v-bind:disabled="!issueDuty"
@@ -18,7 +18,7 @@
       <b-button v-else
         class="control-button update"
         variant="success"
-        v-bind:disabled="!issue || !issueDuty"
+        v-bind:disabled="!issueDuty"
         @click='updateInfo'>
         更新
       </b-button>
@@ -79,7 +79,7 @@
                       id="product-name"
                       v-model="product"
                       :options="productOptions"
-                      :disabled="issue && issue.id >= 0"
+                      :disabled="issueId !== '***'"
                       @change="productChanged">
                     </b-form-select>
                   </div>
@@ -335,42 +335,42 @@ export default {
       let myStatusIdx = this.findStatusIndex(this.issDetailItems[0].conditions.currentState)
       let currentStatusIdx = this.findStatusIndex(this.issStatus)
       let colorVarinant = this.getColorVariant(myStatusIdx, currentStatusIdx)
-      console.log('nonConformityVariant myStatusIdx : ' + myStatusIdx + ', currentStatusIdx : ' + currentStatusIdx + ', colorVariant : ' + colorVarinant)
+      // console.log('nonConformityVariant myStatusIdx : ' + myStatusIdx + ', currentStatusIdx : ' + currentStatusIdx + ', colorVariant : ' + colorVarinant)
       return colorVarinant
     },
     correctVariant () {
       let myStatusIdx = this.findStatusIndex(this.issDetailItems[0].conditions.currentState)
       let currentStatusIdx = this.findStatusIndex(this.issStatus)
       let colorVarinant = this.getColorVariant(myStatusIdx, currentStatusIdx)
-      console.log('correctVariant myStatusIdx : ' + myStatusIdx + ', currentStatusIdx : ' + currentStatusIdx + ', colorVariant : ' + colorVarinant)
+      // console.log('correctVariant myStatusIdx : ' + myStatusIdx + ', currentStatusIdx : ' + currentStatusIdx + ', colorVariant : ' + colorVarinant)
       return colorVarinant
     },
     causeVariant () {
       let myStatusIdx = this.findStatusIndex(this.issDetailItems[2].conditions.currentState)
       let currentStatusIdx = this.findStatusIndex(this.issStatus)
       let colorVarinant = this.getColorVariant(myStatusIdx, currentStatusIdx)
-      console.log('causeVariant myStatusIdx : ' + myStatusIdx + ', currentStatusIdx : ' + currentStatusIdx + ', colorVariant : ' + colorVarinant)
+      // console.log('causeVariant myStatusIdx : ' + myStatusIdx + ', currentStatusIdx : ' + currentStatusIdx + ', colorVariant : ' + colorVarinant)
       return colorVarinant
     },
     counterMeasureVariant () {
       let myStatusIdx = this.findStatusIndex(this.issDetailItems[3].conditions.currentState)
       let currentStatusIdx = this.findStatusIndex(this.issStatus)
       let colorVarinant = this.getColorVariant(myStatusIdx, currentStatusIdx)
-      console.log('counterMeasureVariant myStatusIdx : ' + myStatusIdx + ', currentStatusIdx : ' + currentStatusIdx + ', colorVariant : ' + colorVarinant)
+      // console.log('counterMeasureVariant myStatusIdx : ' + myStatusIdx + ', currentStatusIdx : ' + currentStatusIdx + ', colorVariant : ' + colorVarinant)
       return colorVarinant
     },
     resultVariant () {
       let myStatusIdx = this.findStatusIndex(this.issDetailItems[4].conditions.currentState)
       let currentStatusIdx = this.findStatusIndex(this.issStatus)
       let colorVarinant = this.getColorVariant(myStatusIdx, currentStatusIdx)
-      console.log('resultVariant myStatusIdx : ' + myStatusIdx + ', currentStatusIdx : ' + currentStatusIdx + ', colorVariant : ' + colorVarinant)
+      // console.log('resultVariant myStatusIdx : ' + myStatusIdx + ', currentStatusIdx : ' + currentStatusIdx + ', colorVariant : ' + colorVarinant)
       return colorVarinant
     },
     rollOutVariant () {
       let myStatusIdx = this.findStatusIndex(this.issDetailItems[5].conditions.currentState)
       let currentStatusIdx = this.findStatusIndex(this.issStatus)
       let colorVarinant = this.getColorVariant(myStatusIdx, currentStatusIdx)
-      console.log('rollOutVariant myStatusIdx : ' + myStatusIdx + ', currentStatusIdx : ' + currentStatusIdx + ', colorVariant : ' + colorVarinant)
+      // console.log('rollOutVariant myStatusIdx : ' + myStatusIdx + ', currentStatusIdx : ' + currentStatusIdx + ', colorVariant : ' + colorVarinant)
       return colorVarinant
     }
   },
@@ -402,7 +402,6 @@ export default {
       message: '「指摘編集」 工事中のテンポラリ表示',
       userName: '',
 
-      issue: null,
       dateFormat: 'YYYY-MM-DD',
       currentDate: '2018-07-25',
       minDate: '2018-01-01',
@@ -692,9 +691,9 @@ export default {
       this.issueDuty = false
     },
     setProductOptions () {
-      console.log('setProductOptions')
+      // console.log('setProductOptions')
       let availableProjects = naim.getAvailableProjects()
-      console.log(availableProjects)
+      // console.log(availableProjects)
       this.productOptions = []
       this.productOptions.push({value: -1, text: '製品番号'})
       for (let project of availableProjects) {
@@ -712,12 +711,12 @@ export default {
       this.setMembershipOptions()
     },
     setMembershipOptions () {
-      console.log('setMembershipOptions')
+      // console.log('setMembershipOptions')
       this.membershipOptions = []
       this.membershipOptions.push({value: -1, text: '-'})
       if (this.product >= 0) {
         let membership = naim.getProjectMemberships(this.product)
-        console.log(membership)
+        // console.log(membership)
         for (let member of membership) {
           let option = {
             value: member.user.id,
@@ -776,7 +775,8 @@ export default {
     },
     async setData () {
       console.log('IssueEdit.setData')
-      if (this.issueId >= 0) {
+      if (this.issueId !== '***') {
+        // pending || localStorage || onLine に存在
         this.issDetail = await naim.getIssueDetail(this.issueId)
         this.created_on = this.issDetail.created_on
         this.due_date = this.issDetail.due_date ? this.issDetail.due_date : util.getNowYMD()
@@ -786,9 +786,8 @@ export default {
         let prj = naim.getProject(this.issDetail.project.id)
         this.customer = util.getProjectCustomFieldValue(prj, '顧客情報')
         this.setIssDetail()
-        console.log('#####')
-        console.log(this.issDetail)
       } else {
+        // 完全な新規
         this.issDetail = null
         this.created_on = ''
         this.due_date = util.getNowYMD()
@@ -821,7 +820,7 @@ export default {
     console.log('IssueEdit created')
     this.userName = editstate.user.username
     this.issueId = editstate.issueId
-    console.log(this.issueId)
+    // console.log(this.issueId)
     this.initializeProps()
     this.setData()
   },

@@ -407,7 +407,7 @@ export default {
     return this.availablePrjs
   },
   getProjectMemberships (id) {
-    console.log('getProjectMemberships id : ' + id)
+    // console.log('getProjectMemberships id : ' + id)
     let members = []
     this.memberships.forEach(membership => {
       // console.log(membership)
@@ -549,21 +549,27 @@ export default {
   // indexedDBにある場合（オフライン時に変更されている場合）：indexedDB から取り出す
   // indexedDBになく かつ オフラインのとき：localStorage から取り出す
   // indexedDBになく かつ オンラインのとき：redmineに問い合わせる
-  searchIssueDetail: function (issId) {
-    let storageKey = 'issue-' + issId
-    if (storageKey in localStorage) {
-      this.issueDetail = JSON.parse(localStorage.getItem(storageKey))
+  async searchIssueDetail (issId) {
+    let pendingIssues = []
+    pendingIssues = this.pendingIssues.filter(issue => {
+      return (issue.value.id === issId)
+    })
+    if (pendingIssues.length !== 0) {
+      // ****
     } else {
-      this.issueDetail = null
+      let storageKey = 'issue-' + issId
+      if (storageKey in localStorage) {
+        this.issueDetail = JSON.parse(localStorage.getItem(storageKey))
+      } else {
+        if (store.getters.connectStat) {
+          await this.retrieveIssueDetail(issId)
+        }
+      }
     }
   },
   async getIssueDetail (issId) {
-    console.log('getIssueDetail')
-    if (store.getters.connectStat) {
-      await this.retrieveIssueDetail(issId)
-    } else {
-      this.searchIssueDetail(issId)
-    }
+    // console.log('getIssueDetail')
+    await this.searchIssueDetail(issId)
     return this.issueDetail
   },
 

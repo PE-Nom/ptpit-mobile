@@ -255,10 +255,10 @@ export default {
     }
   },
   created () {
-    console.log('NonConformitytem.created')
+    // console.log('NonConformitytem.created')
   },
   mounted () {
-    console.log('NonConformitytem.mounted')
+    // console.log('NonConformitytem.mounted')
   }
 }
 </script>
