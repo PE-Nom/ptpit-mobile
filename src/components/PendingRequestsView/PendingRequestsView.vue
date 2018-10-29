@@ -67,7 +67,7 @@ export default {
     }
     return {
       columns: ['key', 'request', 'id', 'name', 'subject', 'description'],
-      requestObjs: [],
+      pendingRequests: [],
       requestStrs: [],
       message: '不適合管理　未登録の不適合一覧',
       icon_trash: iconTrash,
@@ -91,12 +91,12 @@ export default {
     }
   },
   methods: {
-    complete (result) {
-      this.requestObjs = result
+    createPendingRequestsList () {
+      this.pendingRequests = naim.getPendingRequests()
       console.log('****** PendingRequestList.complete() ******')
-      console.log(this.requestObjs)
+      console.log(this.pendingRequests)
       let req = []
-      this.requestObjs.forEach(element => {
+      this.pendingRequests.forEach(element => {
         let rec = null
         if (element.value.request === 'file attach') {
           rec = {
@@ -155,9 +155,9 @@ export default {
     select (idx, entry) {
       console.log('selected request key is ' + entry.key)
       this.selectedId = entry.id
-      console.log(this.requestObjs[idx])
-      if (this.requestObjs[idx].value.request !== 'file attach') {
-        console.log('selected requests : ' + this.requestObjs[idx].value.request)
+      console.log(this.pendingRequests[idx])
+      if (this.pendingRequests[idx].value.request !== 'file attach') {
+        console.log('selected requests : ' + this.pendingRequests[idx].value.request)
         editstate.previousPath = '/pendingrequests'
         this.$router.push('issueedit')
       } else {
@@ -221,7 +221,7 @@ export default {
     async upload () {
       console.log('upload')
       // ここでrequestObjsを一件づつ登録していく
-      // this.requestObjs.forEach では
+      // this.pendingRequests.forEach では
       // asyn/awaitのコンテキストが不整合になるため
       // ここではあえてfor ループで実装している
       if (!this.connected) {
@@ -231,8 +231,8 @@ export default {
       } else {
         let id = null
         this.uploading = true
-        for (let i = 0; i < this.requestObjs.length; i++) {
-          let request = this.requestObjs[i]
+        for (let i = 0; i < this.pendingRequests.length; i++) {
+          let request = this.pendingRequests[i]
           console.log(request)
           if (request.value.request === 'create') {
             console.log('upload create request')
@@ -268,7 +268,7 @@ export default {
     }
   },
   created () {
-    this.retrievePendingRequests()
+    this.createPendingRequestsList()
     this.userName = editstate.user.username
   }
 }

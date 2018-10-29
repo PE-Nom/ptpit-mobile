@@ -23,6 +23,8 @@ export default {
   userId: null,
   rootPrj: null,
   pendingIssueId: 0,
+  pendingRequests: [],
+  pendingIssues: [],
 
   async initialize (user) {
     console.log('initialize @ naim')
@@ -69,12 +71,46 @@ export default {
     } else {
       localStorage.setItem('pendingIssueId', this.pendingIssueId)
     }
+    this.retrievePendingRequests()
   },
   finalize () {
     this.clearProjects()
     this.clearIssues()
     this.clearCustomFileds()
     redmine.configure()
+  },
+
+  // ------------------
+  // IndexedDB からの未登録要求の読み出し
+  // ------------------
+  pendingRequestRetrieveComplete (result) {
+    console.log('****** naim.pendingRequestRetrieveComplete() ******')
+    console.log(result)
+    this.pendingRequests = result
+    console.log(this.pendingRequests)
+    // 未登録要求をid毎に振り分ける
+    this.pendingRequests.forEach(request => {
+      let id = request.value.id
+      let exist = false
+      this.pendingIssues.forEach(issue => {
+        if (issue[0].value.id === id) {
+          issue.push(request)
+          exist = true
+        }
+      })
+      if (!exist) {
+        let issue = []
+        issue.push(request)
+        this.pendingIssues.push(issue)
+      }
+    })
+    console.log(this.pendingIssues)
+  },
+  retrievePendingRequests () {
+    pendingRequestManager.getPendingRequests(this.pendingRequestRetrieveComplete.bind(this))
+  },
+  getPendingRequests () {
+    return this.pendingRequests
   },
 
   // ------------------

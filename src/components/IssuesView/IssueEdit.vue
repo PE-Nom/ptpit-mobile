@@ -598,6 +598,7 @@ export default {
           project_id: this.product, // project Object
           description: '', // description
           // ----------------------
+          created_on: this.created_on, // created_on
           start_date: this.start_date, // start_date
           due_date: this.due_date, // due_date
           done_ratio: '', // done_ratio
