@@ -9,14 +9,11 @@
         <div class="operation">
           <div class="spacer">
           </div>
-          <div class="trash">
-            <img :src="icon_trash" class="icon-trash" width='30px' height='30px' @click="removeIssue"/>
+          <div class="up-load">
+            <img :src="icon_upload" v-if="connected" class="icon-up-load" width='30px' height='30px' @click="upload"/>
           </div>
           <div class="connection">
             <img :src="icon_connection" class="icon-connection" width='25px' height='25px' @click="checkServerAccess"/>
-          </div>
-          <div class="up-load">
-            <img :src="icon_upload" v-if="connected" class="icon-up-load" width='30px' height='30px' @click="upload"/>
           </div>
           <div class="new-issue">
             <img :src="icon_new_issue" class="icon-new_issue" width='30px' height='30px' @click="createIssue"/>
@@ -52,7 +49,6 @@ import fileUploader from '../../models/fileUploader.js'
 import Indicator from '../Indicator.vue'
 import iconUpload from '../../assets/upload.png'
 import iconNew from '../../assets/new.png'
-import iconTrash from '../../assets/trash.png'
 import iconConnection from '../../assets/connection.png'
 
 export default {
@@ -71,7 +67,6 @@ export default {
       pendingRequests: [],
       requestStrs: [],
       message: '不適合管理　未登録の不適合一覧',
-      icon_trash: iconTrash,
       icon_new_issue: iconNew,
       icon_upload: iconUpload,
       icon_connection: iconConnection,
@@ -132,12 +127,6 @@ export default {
       } catch (err) {
         alert(err)
         this.$store.commit('setConnectStat', {connectStat: false})
-      }
-    },
-    removeIssue () {
-      console.log('removeIssue')
-      if (this.selectRequestKey !== '') {
-        prm.deletePendingRequest(this.selectRequestKey, this.retrievePendingRequests)
       }
     },
     createIssue: function () {
@@ -248,6 +237,7 @@ export default {
     }
   },
   created () {
+    console.log('PendingRequestView.created')
     this.createPendingRequestsList()
     this.userName = editstate.user.username
   }
@@ -296,7 +286,7 @@ export default {
   flex-wrap: nowrap;
 }
 .spacer {
-  flex-grow: 4;
+  flex-grow: 6;
 }
 .up-load {
   position: relative;
@@ -321,21 +311,6 @@ export default {
   flex-grow: 2;
 }
 .icon-new_issue {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translateY(-50%) translateX(-50%);
-  -webkit-transform: translateY(-50%) translateX(-50%);
-  /* float: right; */
-}
-.trash {
-  position: relative;
-  margin: auto;
-  padding-left: 6px;
-  padding-right: 6px;
-  flex-grow: 2;
-}
-.icon-trash {
   position: absolute;
   top: 50%;
   left: 50%;

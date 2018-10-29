@@ -628,12 +628,14 @@ export default {
     },
     uiTransition () {
       setTimeout(() => {
+        this.updating = false
+        this.creating = false
         if (this.$store.getters.connectStat) {
           this.$router.push('/issues')
         } else {
           this.$router.push('/pendingrequests')
         }
-      }, 200)
+      }, 3000)
     },
     async updateInfo () {
       console.log('updateInfo')
@@ -643,7 +645,6 @@ export default {
       await naim.retrieveIssues(naim.getTrackerIdByName('不適合'))
       await this.uploadFile()
       this.resetIssueDuty()
-      this.updating = false
       this.uiTransition()
     },
     async createInfo () {
@@ -657,7 +658,6 @@ export default {
       await naim.retrieveIssues(naim.getTrackerIdByName('不適合'))
       await this.uploadFile()
       this.resetIssueDuty()
-      this.creating = false
       this.uiTransition()
     },
     // ------------------
