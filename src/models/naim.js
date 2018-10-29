@@ -89,6 +89,7 @@ export default {
     this.pendingRequests = result
     console.log(this.pendingRequests)
     // 未登録要求をid毎に振り分ける
+    this.pendingIssues = []
     this.pendingRequests.forEach(request => {
       let id = request.value.id
       let exist = false
@@ -145,6 +146,16 @@ export default {
     console.log('getUserId : ' + userName + ' id : ' + this.userId)
     return this.userId
   },
+  getUserObjectById (id) {
+    let user = this.users.filter(user => {
+      return user.id === id
+    })
+    let obj = {
+      id: id,
+      name: user[0].login
+    }
+    return obj
+  },
   // ------------------
   // Trackers
   // ------------------
@@ -174,6 +185,12 @@ export default {
     })
     return id
   },
+  getTrackerObjectById (id) {
+    let tracker = this.tracker.filter(tracker => {
+      return tracker.id === id
+    })
+    return tracker[0]
+  },
   // ------------------
   // CustomField data
   // ------------------
@@ -196,7 +213,7 @@ export default {
       throw err
     }
   },
-  getCustomFieldId (fieldName) {
+  getCustomFieldIdByName (fieldName) {
     let fieldId
     this.customFields.forEach(element => {
       if (element.name === fieldName) {
@@ -204,6 +221,15 @@ export default {
       }
     })
     return fieldId
+  },
+  getCustomFieldNameById (fieldId) {
+    let name
+    this.customFields.forEach(element => {
+      if (element.id === fieldId) {
+        name = element.name
+      }
+    })
+    return name
   },
   getCustomeFileds (fieldName) {
     let customField = null
@@ -287,6 +313,12 @@ export default {
     })
     return issueStatus[0].name
   },
+  getIssueStatusObjectById (statusId) {
+    let issueStatus = this.issueStatuses.filter(status => {
+      return status.id === statusId
+    })
+    return issueStatus[0]
+  },
 
   // ------------------
   // Issue Priority
@@ -314,7 +346,12 @@ export default {
     })
     return issuePriority[0].id
   },
-
+  getIssuePriorityObjectById (id) {
+    let issuePriority = this.issuePriorities.filter(priority => {
+      return priority.id === id
+    })
+    return issuePriority[0]
+  },
   // ------------------
   // Projects data
   // ------------------
@@ -353,6 +390,16 @@ export default {
       }
     })
     return prj
+  },
+  getProjectObjectById (id) {
+    let prj = this.projects.filter(project => {
+      return project.id === id
+    })
+    let obj = {
+      id: id,
+      name: prj[0].name
+    }
+    return obj
   },
   async retrieveProject (prjId) {
     let ret = null
@@ -523,6 +570,12 @@ export default {
   getIssues: function () {
     return this.issues
   },
+  getIssue (issId) {
+    let issue = this.issues.filter(issue => {
+      return issue.id === issId
+    })
+    return issue[0]
+  },
 
   // redmineに問い合わせ
   async retrieveIssueDetail (issId) {
@@ -543,28 +596,13 @@ export default {
       console.log(err)
     }
   },
-  // localStorageを検索
-  // オフライン時の変更有無を判断する。
-  // 変更の有無は indexedDB に同一の issIdがあるかで判断する。
-  // indexedDBにある場合（オフライン時に変更されている場合）：indexedDB から取り出す
-  // indexedDBになく かつ オフラインのとき：localStorage から取り出す
-  // indexedDBになく かつ オンラインのとき：redmineに問い合わせる
   async searchIssueDetail (issId) {
-    let pendingIssues = []
-    pendingIssues = this.pendingIssues.filter(issue => {
-      return (issue.value.id === issId)
-    })
-    if (pendingIssues.length !== 0) {
-      // ****
+    if (store.getters.connectStat) {
+      await this.retrieveIssueDetail(issId)
+    } else if ('issue-' + issId in localStorage) {
+      this.issueDetail = JSON.parse(localStorage.getItem('issue-' + issId))
     } else {
-      let storageKey = 'issue-' + issId
-      if (storageKey in localStorage) {
-        this.issueDetail = JSON.parse(localStorage.getItem(storageKey))
-      } else {
-        if (store.getters.connectStat) {
-          await this.retrieveIssueDetail(issId)
-        }
-      }
+      this.issueDetail = null
     }
   },
   async getIssueDetail (issId) {
@@ -572,7 +610,73 @@ export default {
     await this.searchIssueDetail(issId)
     return this.issueDetail
   },
-
+  getPendingIssueDetail (issId) {
+    let pendingIssues = []
+    pendingIssues = this.pendingIssues.filter(issue => {
+      return (issue[0].value.id === issId)
+    })
+    console.log('pendingIssues.length : ' + pendingIssues.length)
+    console.log(pendingIssues)
+    if (pendingIssues.length !== 0) {
+      let issueDetail = null
+      let attachmentFiles = []
+      pendingIssues[0].forEach(issue => {
+        // ****
+        if (issue.value.request === 'create' || issue.value.request === 'update') {
+          let iss = issue.value.query.issue
+          let customFields = []
+          iss.custom_fields.forEach(field => {
+            let obj = {
+              id: field.id,
+              name: this.getCustomFieldNameById(field.id),
+              value: field.value
+            }
+            customFields.push(obj)
+          })
+          issueDetail = {
+            id: issId,
+            created_on: iss.created_on,
+            due_date: iss.due_date,
+            start_date: iss.start_date,
+            subject: iss.subject,
+            project: this.getProjectObjectById(iss.project_id),
+            status: this.getIssueStatusObjectById(iss.status_id),
+            assigned_to: this.getUserObjectById(iss.assigned_to_id),
+            priority: this.getIssuePriorityObjectById(iss.priority_id),
+            custom_fields: customFields
+          }
+          console.log(issueDetail.project)
+          console.log(issueDetail.status)
+          console.log(issueDetail.assigned_to)
+          console.log(issueDetail.priority)
+        } else if (issue.value.request === 'file attach') {
+          let attachmentFile = {
+            filename: issue.value.name,
+            filesize: parseInt(issue.value.size / 1000) + 'kbyte',
+            description: issue.value.description,
+            content_type: issue.value.file_property_bag.type,
+            content_url: '',
+            id: '***',
+            attachment: {
+              name: issue.value.custom_field_name,
+              file: util.createFile(
+                issue.value.name,
+                issue.value.file_property_bag.type,
+                issue.value.mediaData),
+              mediaData: issue.value.mediaData,
+              description: issue.value.description
+            }
+          }
+          attachmentFiles.push(attachmentFile)
+        }
+      })
+      issueDetail.attachmentFiles = attachmentFiles
+      this.issueDetail = issueDetail
+    } else {
+      this.issueDetail = null
+    }
+    return this.issueDetail
+  },
   async createIssue (qobj) {
     try {
       if (store.getters.connectStat) {
@@ -589,6 +693,7 @@ export default {
           query: qobj
         }
         pendingRequestManager.push(pendingRequest)
+        this.retrievePendingRequests()
         let ret = {
           data: {
             issue: {
@@ -614,12 +719,22 @@ export default {
           console.log(res)
         })
       } else {
+        for (let request of this.pendingRequests) {
+          if (request.value.id === issId && request.value.request !== 'create') {
+            let key = request.key
+            pendingRequestManager.deletePendingRequest(key, (event) => {
+              console.log('deletePendingReuest')
+              console.log(event)
+            })
+          }
+        }
         let pendingRequest = {
           request: 'update',
           id: issId,
           query: qobj
         }
         pendingRequestManager.push(pendingRequest)
+        this.retrievePendingRequests()
       }
     } catch (err) {
       console.log(err)
@@ -657,6 +772,7 @@ export default {
           }
         }
         pendingRequestManager.push(pendingRequest)
+        this.retrievePendingRequests()
         return ret
       }
     } catch (err) {

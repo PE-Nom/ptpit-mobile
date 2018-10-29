@@ -53,7 +53,7 @@
         <b-card-header header-tag="header" class="p-1" role="tab">
           <b-btn block href="#" v-b-toggle.accordion-issue variant="success">安全指摘 id:#{{issueId}}</b-btn>
         </b-card-header>
-        <b-collapse id="accordion-issue" :visible="this.product===-1" accordion="issue-accordion" role="tabpanel">
+        <b-collapse id="accordion-issue" :visible="issueId === '***'" accordion="issue-accordion" role="tabpanel">
           <b-card-body>
             <div class="basic-item-field">
               <!--
@@ -609,22 +609,31 @@ export default {
           // comment
           // 'notes': this.notation, // notation
           custom_fields: [
-            { id: naim.getCustomFieldId('不適合内容'), value: this.itemdata[0].content },
-            { id: naim.getCustomFieldId('修正処置'), value: this.itemdata[1].content },
-            { id: naim.getCustomFieldId('不適合原因'), value: this.itemdata[2].content },
-            { id: naim.getCustomFieldId('是正処置'), value: this.itemdata[3].content },
-            { id: naim.getCustomFieldId('効果確認'), value: this.itemdata[4].content },
-            { id: naim.getCustomFieldId('水平展開'), value: this.itemdata[5].content },
-            { id: naim.getCustomFieldId('不適合内容ステータス'), value: this.issDetailInfoStatusName[this.itemdata[0].state] },
-            { id: naim.getCustomFieldId('修正処置ステータス'), value: this.issDetailInfoStatusName[this.itemdata[1].state] },
-            { id: naim.getCustomFieldId('不適合原因ステータス'), value: this.issDetailInfoStatusName[this.itemdata[2].state] },
-            { id: naim.getCustomFieldId('是正処置ステータス'), value: this.issDetailInfoStatusName[this.itemdata[3].state] },
-            { id: naim.getCustomFieldId('効果確認ステータス'), value: this.issDetailInfoStatusName[this.itemdata[4].state] },
-            { id: naim.getCustomFieldId('水平展開ステータス'), value: this.issDetailInfoStatusName[this.itemdata[5].state] }
+            { id: naim.getCustomFieldIdByName('不適合内容'), value: this.itemdata[0].content },
+            { id: naim.getCustomFieldIdByName('修正処置'), value: this.itemdata[1].content },
+            { id: naim.getCustomFieldIdByName('不適合原因'), value: this.itemdata[2].content },
+            { id: naim.getCustomFieldIdByName('是正処置'), value: this.itemdata[3].content },
+            { id: naim.getCustomFieldIdByName('効果確認'), value: this.itemdata[4].content },
+            { id: naim.getCustomFieldIdByName('水平展開'), value: this.itemdata[5].content },
+            { id: naim.getCustomFieldIdByName('不適合内容ステータス'), value: this.issDetailInfoStatusName[this.itemdata[0].state] },
+            { id: naim.getCustomFieldIdByName('修正処置ステータス'), value: this.issDetailInfoStatusName[this.itemdata[1].state] },
+            { id: naim.getCustomFieldIdByName('不適合原因ステータス'), value: this.issDetailInfoStatusName[this.itemdata[2].state] },
+            { id: naim.getCustomFieldIdByName('是正処置ステータス'), value: this.issDetailInfoStatusName[this.itemdata[3].state] },
+            { id: naim.getCustomFieldIdByName('効果確認ステータス'), value: this.issDetailInfoStatusName[this.itemdata[4].state] },
+            { id: naim.getCustomFieldIdByName('水平展開ステータス'), value: this.issDetailInfoStatusName[this.itemdata[5].state] }
           ]
         }
       }
       return qobj
+    },
+    uiTransition () {
+      setTimeout(() => {
+        if (this.$store.getters.connectStat) {
+          this.$router.push('/issues')
+        } else {
+          this.$router.push('/pendingrequests')
+        }
+      }, 200)
     },
     async updateInfo () {
       console.log('updateInfo')
@@ -635,6 +644,7 @@ export default {
       await this.uploadFile()
       this.resetIssueDuty()
       this.updating = false
+      this.uiTransition()
     },
     async createInfo () {
       console.log('createInfo')
@@ -648,6 +658,7 @@ export default {
       await this.uploadFile()
       this.resetIssueDuty()
       this.creating = false
+      this.uiTransition()
     },
     // ------------------
     issueSubjectChanged () {
@@ -703,7 +714,7 @@ export default {
         }
         this.productOptions.push(option)
       }
-      if (this.issueId >= 0) {
+      if (this.issueId !== '***') {
         this.product = this.issDetail.project.id
       } else {
         this.product = this.productOptions[0].value
@@ -737,21 +748,22 @@ export default {
       if (this.issDetail) {
         // 添付ファイルリスト
         let issueAttachments = []
-        this.issDetail.attachments.forEach(el => {
-          let item = {
-            filename: el.filename,
-            filesize: parseInt(el.filesize / 1000) + 'kbyte',
-            description: el.description,
-            content_type: el.content_type,
-            content_url: el.content_url,
-            id: el.id,
-            attachment: null
-          }
-          issueAttachments.push(item)
-        })
+        if (this.issDetail.attachments) {
+          this.issDetail.attachments.forEach(el => {
+            let item = {
+              filename: el.filename,
+              filesize: parseInt(el.filesize / 1000) + 'kbyte',
+              description: el.description,
+              content_type: el.content_type,
+              content_url: el.content_url,
+              id: el.id,
+              attachment: null
+            }
+            issueAttachments.push(item)
+          })
+        }
         // Detail オブジェクトの生成
         this.itemdata = []
-        this.attachmentFiles = []
         this.issDetailItems.forEach(item => {
           let customFieldForName = util.getCustomFieldByName(this.issDetail.custom_fields, item.name)
           let customFieldForStatus = util.getCustomFieldByName(this.issDetail.custom_fields, item.statusName)
@@ -771,13 +783,25 @@ export default {
           console.log(itemdata)
           this.itemdata.push(itemdata)
         })
+        // オフラインで追加した添付を挿入
+        if (this.issDetail.attachmentFiles) {
+          this.attachmentFiles = this.issDetail.attachmentFiles.length !== 0 ? this.issDetail.attachmentFiles : []
+          this.attachmentFiles.forEach(file => {
+            let idx = this.findItemIndex(file.attachment.name)
+            this.itemdata[idx].attachments.push(file)
+          })
+        }
       }
     },
     async setData () {
       console.log('IssueEdit.setData')
       if (this.issueId !== '***') {
         // pending || localStorage || onLine に存在
-        this.issDetail = await naim.getIssueDetail(this.issueId)
+        if (editstate.previousPath === '/issues') {
+          this.issDetail = await naim.getIssueDetail(this.issueId)
+        } else {
+          this.issDetail = naim.getPendingIssueDetail(this.issueId)
+        }
         this.created_on = this.issDetail.created_on
         this.due_date = this.issDetail.due_date ? this.issDetail.due_date : util.getNowYMD()
         this.start_date = this.issDetail.start_date ? this.issDetail.start_date : util.getNowYMD()

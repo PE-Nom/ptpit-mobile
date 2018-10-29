@@ -47,6 +47,7 @@
 import editstate from '../../models/editState.js'
 import prm from '../../models/pendingRequestManager.js'
 import naim from '../../models/naim.js'
+import util from '../../models/util.js'
 import fileUploader from '../../models/fileUploader.js'
 import Indicator from '../Indicator.vue'
 import iconUpload from '../../assets/upload.png'
@@ -141,14 +142,9 @@ export default {
     },
     createIssue: function () {
       console.log('createIssue')
-      this.selectedId = -1
-      let issue = {
-        id: -1,
-        subject: '新規登録の件名',
-        project: {name: '新規登録時の製品名'},
-        description: '新規登録の説明'
-      }
-      editstate.issue = issue
+      let pendingIssueId = JSON.parse(localStorage.getItem('pendingIssueId'))
+      this.selectedId = pendingIssueId - 10
+      editstate.issueId = '***'
       editstate.previousPath = '/pendingrequests'
       this.$router.push('issueedit')
     },
@@ -158,31 +154,21 @@ export default {
       console.log(this.pendingRequests[idx])
       if (this.pendingRequests[idx].value.request !== 'file attach') {
         console.log('selected requests : ' + this.pendingRequests[idx].value.request)
+        console.log('               id : ' + this.pendingRequests[idx].value.id)
+        editstate.issueId = this.pendingRequests[idx].value.id
         editstate.previousPath = '/pendingrequests'
         this.$router.push('issueedit')
       } else {
         alert('これはファイル添付のレコードです。\r "create"もしくは"update"のレコードを選択してください。')
       }
     },
-    // 引数はbase64形式の文字列と作成するファイルオブジェクトのファイル名
-    createFile (request) {
-      let mediaData = request.value.mediaData
-      let name = request.value.name
-      let filePropertyBag = request.value.filePropertyBag
-      // base64のデコード
-      let bin = atob(mediaData.replace(/^.*,/, ''))
-      // バイナリデータ化
-      let buffer = new Uint8Array(bin.length)
-      for (let i = 0; i < bin.length; i++) {
-        buffer[i] = bin.charCodeAt(i)
-      }
-      // ファイルオブジェクト生成(この例ではjpegファイル)
-      return new File([buffer.buffer], name, filePropertyBag)
-    },
     async uploadFile (id, request) {
       try {
         // ここでFileオブジェクトを再構築してproperties にセットする。
-        let file = this.createFile(request)
+        let file = util.createFile(
+          request.value.name,
+          request.value.file_property_bag.type,
+          request.value.mediaData)
         let res = await naim.uploadFile(
           id,
           request.value.custom_field_name,
@@ -251,20 +237,14 @@ export default {
           }
           prm.deletePendingRequest(request.key)
         }
-        await naim.retrieveIssues()
-        this.retrievePendingRequests()
-
-        localStorage.removeItem('pendingIssueId')
-        localStorage.setItem('pendingIssueId', 0)
-        this.uploading = false
+        naim.retrievePendingRequests()
+        setTimeout(() => {
+          this.createPendingRequestsList()
+          localStorage.removeItem('pendingIssueId')
+          localStorage.setItem('pendingIssueId', 0)
+          this.uploading = false
+        }, 100)
       }
-    },
-    retrievePendingRequests (e) {
-      if (e) {
-        console.log(e)
-        this.selectRequestKey = ''
-      }
-      prm.getPendingRequests(this.complete)
     }
   },
   created () {

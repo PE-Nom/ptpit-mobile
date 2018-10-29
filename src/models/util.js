@@ -82,5 +82,20 @@ export default {
       }
     })
     return ret
+  },
+
+  // 引数はbase64形式の文字列と作成するファイルオブジェクトのファイル名
+  createFile (name, type, mediaData) {
+    let filePropertyBag = { type: type }
+    // base64のデコード
+    let bin = atob(mediaData.replace(/^.*,/, ''))
+    // バイナリデータ化
+    let buffer = new Uint8Array(bin.length)
+    for (let i = 0; i < bin.length; i++) {
+      buffer[i] = bin.charCodeAt(i)
+    }
+    // ファイルオブジェクト生成(この例ではjpegファイル)
+    return new File([buffer.buffer], name, filePropertyBag)
   }
+
 }

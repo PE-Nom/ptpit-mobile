@@ -223,8 +223,9 @@ export default {
       this.product = this.productOptions[0].value
     }
   },
-  created () {
+  async created () {
     console.log('IssuesView created')
+    await naim.retrieveIssues(naim.getTrackerIdByName('不適合'))
     this.setProductOptions()
     this.product = editstate.productId
     this.issues = naim.getIssues()
