@@ -4,7 +4,7 @@
     <div class="banner-title">
       <div>
         <div class="qaimage">
-        <img src="../assets/QualityAssuarance.png" alt="品質保証">
+        <img src="../assets/quality-assuarance-256x256.png" alt="品質保証">
         </div>
         <br>
         <div>

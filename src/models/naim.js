@@ -178,11 +178,13 @@ export default {
   },
   getTrackerIdByName (name) {
     let id = null
-    this.trackers.forEach(tracker => {
-      if (tracker.name === name) {
-        id = tracker.id
-      }
-    })
+    if (this.trackers) {
+      this.trackers.forEach(tracker => {
+        if (tracker.name === name) {
+          id = tracker.id
+        }
+      })
+    }
     return id
   },
   getTrackerObjectById (id) {
@@ -356,25 +358,27 @@ export default {
   // Projects data
   // ------------------
   async retrieveProjects () {
-    try {
-      // Project List
-      const prjs = []
-      this.projects = []
-      await redmine.projects({}, res => {
-        console.log('==== Retrieve Projects @ naim ====')
-        res.data.projects.forEach(element => {
-          prjs.push(element)
-          // console.log(element)
+    if (redmine.isConfigured()) {
+      try {
+        // Project List
+        const prjs = []
+        this.projects = []
+        await redmine.projects({}, res => {
+          console.log('==== Retrieve Projects @ naim ====')
+          res.data.projects.forEach(element => {
+            prjs.push(element)
+            // console.log(element)
+          })
         })
-      })
-      // ここで Project List を更新する。
-      this.projects = prjs
-      localStorage.removeItem('projects')
-      localStorage.setItem('projects', JSON.stringify(this.projects))
-      console.log(this.projects)
-    } catch (err) {
-      alert(err)
-      throw err
+        // ここで Project List を更新する。
+        this.projects = prjs
+        localStorage.removeItem('projects')
+        localStorage.setItem('projects', JSON.stringify(this.projects))
+        console.log(this.projects)
+      } catch (err) {
+        alert(err)
+        throw err
+      }
     }
   },
   getProjects () {
@@ -402,49 +406,53 @@ export default {
     return obj
   },
   async retrieveProject (prjId) {
-    let ret = null
-    try {
-      ret = await redmine.project(prjId, {}, res => {
-        // console.log('==== retrieve Project @ naim ====')
-        // console.log(res)
-      })
-      return ret
-    } catch (err) {
-      throw err
+    if (redmine.isConfigured()) {
+      let ret = null
+      try {
+        ret = await redmine.project(prjId, {}, res => {
+          // console.log('==== retrieve Project @ naim ====')
+          // console.log(res)
+        })
+        return ret
+      } catch (err) {
+        throw err
+      }
     }
   },
   async retrieveMembershipOfProjects () {
-    try {
-      this.memberships = []
-      let prjs = []
-      for (let prj of this.projects) {
-        await redmine.membershipOfProject(prj.id, res => {
-          // console.log('==== Membership of project @ naim ====')
-          // console.log(prj)
-          for (let membership of res.data.memberships) {
-            this.memberships.push(membership)
-            if (membership.user.id === this.userId) {
-              // console.log('find userId')
-              if (prj.parent !== undefined) {
-                this.rootPrj = prj.parent
-                let availablePrj = Object.assign({}, prj)
-                Object.assign(availablePrj, {roles: membership.roles})
-                prjs.push(availablePrj)
+    if (redmine.isConfigured()) {
+      try {
+        this.memberships = []
+        let prjs = []
+        for (let prj of this.projects) {
+          await redmine.membershipOfProject(prj.id, res => {
+            // console.log('==== Membership of project @ naim ====')
+            // console.log(prj)
+            for (let membership of res.data.memberships) {
+              this.memberships.push(membership)
+              if (membership.user.id === this.userId) {
+                // console.log('find userId')
+                if (prj.parent !== undefined) {
+                  this.rootPrj = prj.parent
+                  let availablePrj = Object.assign({}, prj)
+                  Object.assign(availablePrj, {roles: membership.roles})
+                  prjs.push(availablePrj)
+                }
               }
             }
-          }
-        })
+          })
+        }
+        localStorage.removeItem('memberships')
+        localStorage.setItem('memberships', JSON.stringify(this.memberships))
+        // console.log(this.memberships)
+        this.availablePrjs = prjs
+        localStorage.removeItem('availablePrjs')
+        localStorage.setItem('availablePrjs', JSON.stringify(this.availablePrjs))
+        // console.log(this.availablePrjs)
+      } catch (err) {
+        console.log('==== Membership of project @ naim ====')
+        console.log(err)
       }
-      localStorage.removeItem('memberships')
-      localStorage.setItem('memberships', JSON.stringify(this.memberships))
-      // console.log(this.memberships)
-      this.availablePrjs = prjs
-      localStorage.removeItem('availablePrjs')
-      localStorage.setItem('availablePrjs', JSON.stringify(this.availablePrjs))
-      // console.log(this.availablePrjs)
-    } catch (err) {
-      console.log('==== Membership of project @ naim ====')
-      console.log(err)
     }
   },
   getParentProject () {
@@ -543,22 +551,24 @@ export default {
   async retrieveIssues (trackerId) {
     try {
       console.log('### retrieveIssues ###')
-      if (store.getters.connectStat) {
-        // Issues List
-        this.issues = []
-        console.log(' call redmine.issues')
-        await redmine.issues(trackerId, res => {
-          console.log('==== Issues @ naim ====')
-          res.data.issues.forEach(el => {
-            this.issues.push(el)
+      if (redmine.isConfigured()) {
+        if (store.getters.connectStat) {
+          // Issues List
+          this.issues = []
+          console.log(' call redmine.issues')
+          await redmine.issues(trackerId, res => {
+            console.log('==== Issues @ naim ====')
+            res.data.issues.forEach(el => {
+              this.issues.push(el)
+            })
           })
-        })
-        localStorage.removeItem('issues')
-        localStorage.setItem('issues', JSON.stringify(this.issues))
-        console.log(this.issues)
-      } else {
-        console.log('read issues from localStorage')
-        this.issues = JSON.parse(localStorage.getItem('issues'))
+          localStorage.removeItem('issues')
+          localStorage.setItem('issues', JSON.stringify(this.issues))
+          console.log(this.issues)
+        } else {
+          console.log('read issues from localStorage')
+          this.issues = JSON.parse(localStorage.getItem('issues'))
+        }
       }
     } catch (err) {
       console.log('err @ retrieveIssues')

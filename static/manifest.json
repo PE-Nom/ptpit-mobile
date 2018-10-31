@@ -3,12 +3,12 @@
   "short_name": "ピットさん モバイル版",
   "icons": [
     {
-      "src": "/static/img/icons/QualityAssuarance-192x192.png",
+      "src": "/static/img/icons/quality-assuarance-192x192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/static/img/icons/QualityAssuarance-512x512.png",
+      "src": "/static/img/icons/quality-assuarance-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
