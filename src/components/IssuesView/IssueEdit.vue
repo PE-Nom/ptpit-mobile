@@ -1,10 +1,10 @@
 <template>
   <div class="issue-edit">
     <b-navbar v-if="showNavbar" type="dark" variant="success">
-      <b-navbar-brand to="/issues">&lt;&lt; 指摘一覧</b-navbar-brand>
+      <b-navbar-brand to="/issues">&lt;&lt; 不適合一覧</b-navbar-brand>
     </b-navbar>
     <b-navbar v-else type="dark" variant="success">
-      <b-navbar-brand to="/pendingrequests">&lt;&lt; 未登録指摘一覧</b-navbar-brand>
+      <b-navbar-brand to="/pendingrequests">&lt;&lt; 未登録不適合一覧</b-navbar-brand>
     </b-navbar>
     <div class="username" style="font-size:'x-small;'">ログイン：{{userName}}({{connectStatus}})</div>
     <div class="operation-field">
@@ -51,7 +51,7 @@
       <!-- 基本情報 編集エリア -->
       <b-card no-body class="mb-1">
         <b-card-header header-tag="header" class="p-1" role="tab">
-          <b-btn block href="#" v-b-toggle.accordion-issue variant="success">安全指摘 id:#{{issueId}}</b-btn>
+          <b-btn block href="#" v-b-toggle.accordion-issue variant="success">不適合 id:#{{issueId}}</b-btn>
         </b-card-header>
         <b-collapse id="accordion-issue" :visible="issueId === '***'" accordion="issue-accordion" role="tabpanel">
           <b-card-body>
@@ -63,7 +63,7 @@
                 <!-- 指摘番号 -->
                 <div class="form-group row-top">
                   <div class="col-md-10">
-                    <label for="issue-id" class="control-label">指摘番号</label>
+                    <label for="issue-id" class="control-label">不適合番号</label>
                     <input type="text"
                       class="form-control"
                       id="issue-id"
@@ -87,7 +87,7 @@
                 <!-- 指摘件名 -->
                 <div class="form-group">
                   <div class="col-md-10">
-                    <label for="issue-subject" class="control-label">指摘件名</label>
+                    <label for="issue-subject" class="control-label">不適合件名</label>
                     <input type="text"
                       class="form-control"
                       id="issue-subject"
