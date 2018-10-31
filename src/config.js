@@ -1,19 +1,19 @@
 // Pitsan configuration
 
 // for Home work
+/*
 exports.BaseURL = 'https://192.168.10.6' // Pitsan Server BaseURL @home
 exports.UploadBaseURL = this.BaseURL + ':8081' // Pitsan Server BaseURL @ office & home
 exports.Username = 'mhims1' // Pitsan Username
 exports.Password = 'mhims0821' // Pitsan password
-/*
 */
 
 // for Office work
-/*
 exports.BaseURL = 'https://192.168.1.4' // Pitsan Server BaseURL @office
 exports.UploadBaseURL = this.BaseURL + ':8081' // Pitsan Server BaseURL @ office & home
 exports.Username = 'nc-manager-001' // Pitsan Username
 exports.Password = 'nc-manager-001' // Pitsan password
+/*
 */
 
 // for AWS

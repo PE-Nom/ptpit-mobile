@@ -3,15 +3,14 @@
     <div class="username" style="font-size:'x-small;'">ログイン：{{userName}}({{connectStatus}})</div>
     <div class="banner-title">
       <div>
-        <div>
-        <img src="../assets/safetyfirst.png" alt="安全第一">
+        <div class="qaimage">
+        <img src="../assets/QualityAssuarance.png" alt="品質保証">
         </div>
         <br>
         <div>
           <h1>{{ msg }}</h1>
           <br>
           <p class="explanation">{{system}}</p>
-          <p class="explanation">{{subname}}</p>
           <p class="explanation">{{corporate}}</p>
         </div>
       </div>
@@ -26,9 +25,8 @@ export default {
   // name: 'Home',
   data () {
     return {
-      msg: 'ピットさん',
-      system: 'Safety And Nonconforming',
-      subname: 'Management System',
+      msg: 'ピットさん NM',
+      system: 'Nonconforming Management System',
       corporate: 'by Pitarpit Co.,Ltd.',
       userName: ''
     }
@@ -65,9 +63,11 @@ export default {
 .banner-title {
   height: 90vh;
   display: flex;
-  align-items: center;
   justify-content: center;
   text-align: center;
+}
+.qaimage {
+  margin-top: 50px;
 }
 .explanation {
   font-weight: 100;
