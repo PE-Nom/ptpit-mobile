@@ -73,8 +73,10 @@
         <div class="table-row header">
           <div class="wrapper attributes header">
             <div v-for="(val, idx) in attachmentsInfoColumns" v-bind:key=idx :class="[val]">
-              {{ val }}
-            </div>
+              <span v-if="val==='id'">番号</span>
+              <span v-else-if="val==='filename'">ファイル名</span>
+              <span v-else>概要</span>
+           </div>
           </div>
         </div>
       </div>
@@ -371,10 +373,10 @@ export default {
 }
 
 .id {
-  width: 10%;
+  width: 20%;
 }
 .filename {
-  width: 60%;
+  width: 50%;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
